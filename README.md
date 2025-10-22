@@ -402,8 +402,8 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 ## 👨‍💻 Geliştirici
 
 **Onur Güler**
-- GitHub: [@onurguler](https://github.com/onurguler)
-- LinkedIn: [Onur Güler](https://linkedin.com/in/onurguler)
+- GitHub: [@onurguler](https://github.com/onurglr)
+- LinkedIn: [Onur Güler](https://linkedin.com/in/onur-g)
 
 ---
 
