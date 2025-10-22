@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-application-service
+  namespace: default
+spec:
+  selector:
+    app: devops-application
+  ports:
+    - port: 9090        # Service port for access from within the cluster
+      targetPort: 8080  # Container port inside the pod
+  type: NodePort      
+#  type: ClusterIP # Does not open to outside, we will use it with port-forward
