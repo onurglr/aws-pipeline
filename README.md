@@ -44,60 +44,63 @@ Bu proje, modern DevOps pratiklerini kullanarak Spring Boot uygulamasının tam 
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🔄 CI/CD Pipeline Akışı
+## 🔄 DevOps Pipeline Detayları
 
-### 1. **Source Control Management (SCM)**
-- GitHub repository'den kod çekme
-- Main branch'den otomatik trigger
+### 📋 Pipeline Aşamaları
 
-### 2. **Test Stage**
-```bash
-mvn test
-```
-- Unit testlerin çalıştırılması
-- Test coverage analizi
+#### 1. **Kaynak Kod Yönetimi (SCM)**
+- **GitHub Repository**: Kod değişikliklerinin takibi
+- **Branch Strategy**: Main branch'den otomatik tetikleme
+- **Webhook Integration**: Gerçek zamanlı build tetikleme
+- **Version Control**: Git tag'leri ile versiyon yönetimi
 
-### 3. **Build Stage**
-```bash
-mvn clean install
-```
-- Maven ile proje build
-- JAR dosyası oluşturma
+#### 2. **Test Aşaması**
+- **Unit Testing**: Maven test framework ile otomatik testler
+- **Test Coverage**: Kod kapsamı analizi ve raporlama
+- **Quality Metrics**: Test başarı oranı ve performans metrikleri
+- **Test Results**: Jenkins dashboard'da test sonuçları görüntüleme
 
-### 4. **Code Quality Analysis**
-```bash
-mvn sonar:sonar
-```
-- SonarQube ile kod kalitesi analizi
-- Code smell, bug, vulnerability tespiti
-- Quality Gate kontrolü
+#### 3. **Build Aşaması**
+- **Maven Build**: Clean install ile proje derleme
+- **Dependency Management**: Bağımlılık çözümleme ve kontrolü
+- **Artifact Creation**: JAR dosyası oluşturma ve doğrulama
+- **Build Optimization**: Build süre optimizasyonu ve cache kullanımı
 
-### 5. **Docker Build & Push**
-```bash
-docker build -t onurguler18/devops-03-pipeline-aws:1.0.${BUILD_NUMBER}
-docker push onurguler18/devops-03-pipeline-aws:1.0.${BUILD_NUMBER}
-docker push onurguler18/devops-03-pipeline-aws:latest
-```
-- Docker image oluşturma
-- DockerHub'a push
+#### 4. **Kod Kalitesi Analizi**
+- **SonarQube Integration**: Kod kalitesi ve güvenlik analizi
+- **Code Smell Detection**: Kod kokularının tespiti ve düzeltme önerileri
+- **Vulnerability Scanning**: Güvenlik açıklarının tespiti
+- **Quality Gate**: Kalite kriterlerinin karşılanması kontrolü
 
-### 6. **Security Scanning**
-```bash
-trivy image onurguler18/devops-03-pipeline-aws:latest
-```
-- Trivy ile güvenlik taraması
-- HIGH ve CRITICAL seviye vulnerability kontrolü
+#### 5. **Containerization**
+- **Docker Build**: Multi-stage build ile optimize edilmiş image oluşturma
+- **Image Tagging**: Versiyon numarası ile image etiketleme
+- **Registry Push**: DockerHub'a güvenli image yükleme
+- **Image Optimization**: Boyut optimizasyonu ve güvenlik taraması
 
-### 7. **Kubernetes Deployment**
-```bash
-kubectl apply -f deployment-service.yaml
-```
-- EKS cluster'a deployment
-- Service oluşturma
+#### 6. **Güvenlik Taraması**
+- **Trivy Integration**: Container image güvenlik taraması
+- **Vulnerability Assessment**: HIGH ve CRITICAL seviye güvenlik açıklarının kontrolü
+- **Security Reports**: Güvenlik raporlarının oluşturulması
+- **Compliance Check**: Güvenlik standartlarına uygunluk kontrolü
 
-### 8. **Cleanup**
-- Eski Docker image'ları temizleme
-- Disk alanı optimizasyonu
+#### 7. **Kubernetes Deployment**
+- **EKS Integration**: AWS EKS cluster'a otomatik deployment
+- **Service Configuration**: Load balancer ve service konfigürasyonu
+- **Health Checks**: Pod sağlık kontrolü ve readiness probe
+- **Rolling Update**: Sıfır downtime ile güncelleme
+
+#### 8. **Monitoring ve Logging**
+- **Application Monitoring**: Uygulama performans ve sağlık takibi
+- **Log Aggregation**: Merkezi log toplama ve analiz
+- **Alerting**: Kritik durumlar için otomatik uyarı sistemi
+- **Dashboard**: Gerçek zamanlı monitoring dashboard'u
+
+#### 9. **Cleanup ve Optimizasyon**
+- **Resource Cleanup**: Eski image'ların ve container'ların temizlenmesi
+- **Disk Optimization**: Disk alanı optimizasyonu
+- **Performance Tuning**: Sistem performans ayarları
+- **Cost Optimization**: AWS maliyet optimizasyonu
 
 ## 📁 Proje Yapısı
 
@@ -236,27 +239,10 @@ aws-pipeline/
 
 ## 🚀 Application Deployment
 
-### Local Development
-
-### 📦 Project Setup
-- Git repository cloning ve directory navigation
-- Maven build process ve JAR file validation
-- Application startup ve local testing
-
-### Docker ile Çalıştırma
-
-### 🐳 Docker Operations
-- Docker image building ve validation
-- Container deployment ve port mapping
-- Application testing ve health check
-
-### Kubernetes ile Deployment
-
-### ⚙️ Kubernetes Deployment
-- Deployment YAML validation ve application
-- Service configuration ve networking
-- Pod status monitoring ve health checks
-- Port forwarding ve application access
+### 📦 Temel Deployment
+- Git repository cloning ve Maven build process
+- Docker image building ve container deployment
+- Kubernetes deployment ve service configuration
 
 ## 🌐 API Endpoints
 
@@ -274,60 +260,43 @@ aws-pipeline/
 }
 ```
 
-## ⚙️ Konfigürasyon
+## ⚙️ DevOps Konfigürasyon Detayları
 
-### Application Properties
-```properties
-spring.application.name=aws-pipeline
-server.port=8080
-```
+### 🔧 Jenkins Pipeline Konfigürasyonu
+- **Pipeline Script**: Declarative pipeline syntax ile CI/CD otomasyonu
+- **Build Triggers**: GitHub webhook ve SCM polling konfigürasyonu
+- **Environment Variables**: Build environment ve credential yönetimi
+- **Parallel Execution**: Multi-stage pipeline ile paralel build execution
 
-### Docker Configuration
-```dockerfile
-FROM openjdk:21
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} devops-application.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "devops-application.jar"]
-```
+### 🐳 Docker Konfigürasyonu
+- **Multi-stage Build**: Production-ready image oluşturma
+- **Security Scanning**: Container güvenlik taraması ve vulnerability check
+- **Image Optimization**: Layer caching ve boyut optimizasyonu
+- **Registry Integration**: DockerHub authentication ve push automation
 
-### Kubernetes Configuration
-```yaml
-# Deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: devops-application-deployment
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: devops-application
-  template:
-    spec:
-      containers:
-      - name: devops-application
-        image: onurguler18/devops-application:latest
-        ports:
-        - containerPort: 8080
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
+### ⚙️ Kubernetes Konfigürasyonu
+- **Deployment Strategy**: Rolling update ve zero-downtime deployment
+- **Resource Management**: CPU ve memory limits ile resource optimization
+- **Health Checks**: Liveness ve readiness probe konfigürasyonu
+- **Service Mesh**: Load balancing ve service discovery
 
-# Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: devops-application-service
-spec:
-  selector:
-    app: devops-application
-  ports:
-  - port: 9090
-    targetPort: 8080
-  type: NodePort
-```
+### 🔍 SonarQube Konfigürasyonu
+- **Quality Gates**: Kod kalitesi kriterleri ve threshold ayarları
+- **Code Coverage**: Test coverage requirements ve reporting
+- **Security Rules**: Güvenlik kuralları ve vulnerability detection
+- **Integration**: Jenkins pipeline ile otomatik quality gate kontrolü
+
+### 🔄 ArgoCD Konfigürasyonu
+- **GitOps Workflow**: Git-based deployment ve configuration management
+- **Sync Policies**: Otomatik sync ve manual approval workflows
+- **Application Monitoring**: Deployment status ve health monitoring
+- **Rollback Capabilities**: Hızlı rollback ve version management
+
+### 📊 Monitoring Konfigürasyonu
+- **Metrics Collection**: Application ve infrastructure metrics
+- **Log Aggregation**: Centralized logging ve log analysis
+- **Alerting Rules**: Threshold-based alerting ve notification
+- **Dashboard Configuration**: Real-time monitoring ve visualization
 
 ## 🔧 Jenkins Konfigürasyonu ve Bağlantıları
 
