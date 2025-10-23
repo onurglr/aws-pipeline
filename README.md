@@ -125,239 +125,138 @@ aws-pipeline/
 
 ### AWS Instance Types (t4g.xlarge referans alınarak)
 
-| Makine | Instance Type | vCPU | RAM | Açıklama |
-|--------|---------------|------|-----|----------|
-| Jenkins Master | t4g.xlarge | 4 | 16GB | Ana CI/CD server |
-| Jenkins Agent | t4g.large | 2 | 8GB | Build işlemleri için |
-| SonarQube | t4g.medium | 2 | 4GB | Code quality analysis |
-| EKS Bootstrap | t4g.small | 2 | 2GB | Cluster management |
-| EKS Nodes | t4g.medium | 2 | 4GB | Application workloads |
+| Makine | Instance Type | vCPU | RAM | Storage | Açıklama |
+|--------|---------------|------|-----|---------|----------|
+| Jenkins Master | t4g.xlarge | 4 | 16GB | 15GB | Ana CI/CD server |
+| Jenkins Agent | t4g.large | 2 | 8GB | 15GB | Build işlemleri için |
+| SonarQube | t4g.medium | 2 | 4GB | 15GB | Code quality analysis |
+| EKS Bootstrap | t4g.small | 2 | 2GB | 15GB | Cluster management |
+| EKS Nodes | t4g.medium | 2 | 4GB | 15GB | Application workloads |
 
 ### Makine 1: Jenkins Master Server
 
 #### AWS EC2 Instance (t4g.xlarge)
 1. **Instance Type**: `t4g.xlarge` (4 vCPU, 16GB RAM, ARM64)
 2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 50GB GP3 EBS
+3. **Storage**: 15GB GP3 EBS
 4. **Network**: VPC with internet gateway
 
-#### Java 21 Kurulumu
-1. **Terminal aç** ve güncelleme yap:
-   - `sudo apt update && sudo apt upgrade -y`
-2. **Java 21 JDK** kur:
-   - `sudo apt install openjdk-21-jdk -y`
-3. **Java sürümünü kontrol et**:
-   - `java -version`
+### 🛠️ Kurulum Adımları
 
-#### Maven Kurulumu
-1. **Maven** paketini kur:
-   - `sudo apt install maven -y`
-2. **Maven sürümünü kontrol et**:
-   - `mvn -version`
+#### ☕ Java 21 & Maven
+- Sistem güncellemesi ve Java 21 JDK kurulumu
+- Maven build tool kurulumu
+- Sürüm kontrolü ve doğrulama
 
-#### Jenkins Kurulumu
-1. **Jenkins repository** ekle:
-   - Jenkins GPG key'i indir
-   - Repository'yi sources.list'e ekle
-2. **Jenkins** paketini kur:
-   - `sudo apt install jenkins -y`
-3. **Jenkins servisini başlat**:
-   - `sudo systemctl start jenkins`
-   - `sudo systemctl enable jenkins`
-4. **Jenkins durumunu kontrol et**:
-   - `sudo systemctl status jenkins`
-5. **Admin şifresini al**:
-   - `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`
+#### 🚀 Jenkins Setup
+- Jenkins repository konfigürasyonu
+- Jenkins servisi kurulumu ve başlatma
+- Admin panel erişimi ve ilk konfigürasyon
 
 ### Makine 2: Jenkins Agent Server
 
 #### AWS EC2 Instance (t4g.large)
 1. **Instance Type**: `t4g.large` (2 vCPU, 8GB RAM, ARM64)
 2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 100GB GP3 EBS
+3. **Storage**: 15GB GP3 EBS
 4. **Network**: VPC with internet gateway
 
-#### Java 21 ve Maven Kurulumu
-1. **Java 21 JDK** kur
-2. **Maven** kur
-3. **Sürümleri kontrol et**
+### 🛠️ Kurulum Adımları
 
-#### Docker Kurulumu
-1. **Docker** paketini kur:
-   - `sudo apt install docker.io -y`
-2. **Docker servisini başlat**:
-   - `sudo systemctl start docker`
-   - `sudo systemctl enable docker`
-3. **Kullanıcıyı docker grubuna ekle**:
-   - `sudo usermod -aG docker $USER`
-4. **Docker Hub'a login ol**:
-   - `docker login -u onurguler18 -p YOUR_DOCKER_TOKEN`
+#### ☕ Java & Maven
+- Java 21 JDK ve Maven kurulumu
+- Sürüm kontrolü ve doğrulama
 
-#### Agent Temizlik Scripti
-1. **Disk alanı** için temizlik scripti oluştur
-2. **Eski Docker image'ları** sil
-3. **Container'ları** temizle
-4. **Volume'ları** temizle
+#### 🐳 Docker Setup
+- Docker engine kurulumu ve konfigürasyonu
+- Docker Hub authentication
+- User permissions ve grup ayarları
+
+#### 🧹 Maintenance Scripts
+- Disk cleanup otomasyonu
+- Docker image ve container temizliği
+- Volume management
 
 ### Makine 3: SonarQube Server
 
 #### AWS EC2 Instance (t4g.medium)
 1. **Instance Type**: `t4g.medium` (2 vCPU, 4GB RAM, ARM64)
 2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 50GB GP3 EBS
+3. **Storage**: 15GB GP3 EBS
 4. **Network**: VPC with internet gateway
 
-#### Java 11 Kurulumu
-1. **Java 11 JDK** kur (SonarQube için gerekli)
-2. **Java sürümünü kontrol et**
+### 🛠️ Kurulum Adımları
 
-#### PostgreSQL Kurulumu
-1. **PostgreSQL** paketini kur:
-   - `sudo apt install postgresql postgresql-contrib -y`
-2. **PostgreSQL servisini başlat**:
-   - `sudo systemctl start postgresql`
-   - `sudo systemctl enable postgresql`
+#### ☕ Java 11 Setup
+- Java 11 JDK kurulumu (SonarQube requirement)
+- Sürüm kontrolü ve doğrulama
 
-#### SonarQube Veritabanı Oluşturma
-1. **PostgreSQL'e bağlan**:
-   - `sudo -u postgres psql`
-2. **Veritabanı oluştur**:
-   - `CREATE DATABASE sonarqube;`
-3. **Kullanıcı oluştur**:
-   - `CREATE USER sonarqube WITH PASSWORD 'sonarqube';`
-4. **Yetkileri ver**:
-   - `GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonarqube;`
-5. **PostgreSQL'den çık**:
-   - `\q`
+#### 🐘 PostgreSQL Database
+- PostgreSQL server kurulumu ve konfigürasyonu
+- SonarQube database ve user oluşturma
+- Database permissions ve access ayarları
 
-#### SonarQube Kurulumu
-1. **SonarQube** dosyasını indir:
-   - `/opt` dizinine git
-   - SonarQube ZIP dosyasını indir
-2. **SonarQube'u çıkar**:
-   - ZIP dosyasını çıkar
-   - Dizini yeniden adlandır
-3. **Dosya sahipliğini değiştir**:
-   - `sudo chown -R $USER:$USER /opt/sonarqube`
-4. **SonarQube'u başlat**:
-   - `/opt/sonarqube/bin/linux-x86-64` dizinine git
-   - `./sonar.sh start` komutunu çalıştır
+#### 🔍 SonarQube Installation
+- SonarQube binary indirme ve kurulum
+- File permissions ve ownership ayarları
+- SonarQube service başlatma ve konfigürasyon
 
 ### Makine 4: AWS EKS Server
 
 #### AWS EC2 Instance (t4g.small)
 1. **Instance Type**: `t4g.small` (2 vCPU, 2GB RAM, ARM64)
 2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 30GB GP3 EBS
+3. **Storage**: 15GB GP3 EBS
 4. **Network**: VPC with internet gateway
 
-#### Hostname Güncelleme
-1. **Hostname dosyasını düzenle**:
-   - `sudo nano /etc/hostname`
-2. **Hostname'i değiştir**:
-   - `My-EKS-Bootstrap-Server` yaz
-3. **Makineyi yeniden başlat**:
-   - `sudo reboot`
+### 🛠️ Kurulum Adımları
 
-#### AWS CLI Kurulumu
-1. **AWS CLI ZIP** dosyasını indir
-2. **Unzip** paketini kur
-3. **AWS CLI'yi çıkar** ve kur
-4. **AWS CLI sürümünü kontrol et**
+#### 🏷️ System Configuration
+- Hostname güncelleme ve system reboot
+- System preparation ve network ayarları
 
-#### Kubectl Kurulumu
-1. **Kubectl** dosyasını indir
-2. **Executable** yap
-3. **Bin dizinine taşı**
-4. **Kubectl sürümünü kontrol et**
+#### ☁️ AWS Tools Installation
+- AWS CLI kurulumu ve konfigürasyonu
+- AWS credentials setup ve validation
 
-#### eksctl Kurulumu
-1. **eksctl** dosyasını indir
-2. **Temporary dizine çıkar**
-3. **Bin dizinine taşı**
-4. **eksctl sürümünü kontrol et**
+#### ⚙️ Kubernetes Tools
+- kubectl client kurulumu
+- eksctl cluster management tool kurulumu
+- Version kontrolü ve doğrulama
 
-#### EKS Cluster Oluşturma
-1. **AWS credentials** yapılandır
-2. **EKS cluster** oluştur:
-   - Cluster adı: `my-workspace-cluster`
-   - Region: `us-east-2`
-   - Node type: `t4g.medium`
-   - Node sayısı: `2`
+#### 🚀 EKS Cluster Setup
+- AWS credentials konfigürasyonu
+- EKS cluster oluşturma (my-workspace-cluster)
+- Node group konfigürasyonu
 
-#### ArgoCD Kurulumu
-1. **ArgoCD namespace** oluştur
-2. **ArgoCD manifest** dosyasını uygula
-3. **ArgoCD CLI** kur
-4. **ArgoCD LoadBalancer** yapılandır
-5. **ArgoCD admin şifresini** al
+#### 🔄 ArgoCD Deployment
+- ArgoCD namespace ve deployment
+- ArgoCD CLI kurulumu
+- LoadBalancer konfigürasyonu ve admin access
 
 ## 🚀 Application Deployment
 
 ### Local Development
 
-#### Proje Klonlama
-1. **Git repository'yi klonla**:
-   - `git clone https://github.com/onurguler/aws-pipeline.git`
-2. **Proje dizinine git**:
-   - `cd aws-pipeline`
-
-#### Maven Build
-1. **Maven ile projeyi build et**:
-   - `mvn clean package`
-2. **JAR dosyasının oluştuğunu kontrol et**:
-   - `target/devops-application.jar` dosyası var mı?
-
-#### Uygulamayı Çalıştırma
-1. **JAR dosyasını çalıştır**:
-   - `java -jar target/devops-application.jar`
-2. **Uygulamanın çalıştığını kontrol et**:
-   - `http://localhost:8080` adresine git
+### 📦 Project Setup
+- Git repository cloning ve directory navigation
+- Maven build process ve JAR file validation
+- Application startup ve local testing
 
 ### Docker ile Çalıştırma
 
-#### Docker Image Oluşturma
-1. **Dockerfile'ın mevcut olduğunu kontrol et**
-2. **Docker image oluştur**:
-   - `docker build -t onurguler18/devops-application:latest .`
-3. **Image'ın oluştuğunu kontrol et**:
-   - `docker images`
-
-#### Container Çalıştırma
-1. **Container'ı çalıştır**:
-   - `docker run -p 8080:8080 onurguler18/devops-application:latest`
-2. **Uygulamanın çalıştığını kontrol et**:
-   - `http://localhost:8080` adresine git
+### 🐳 Docker Operations
+- Docker image building ve validation
+- Container deployment ve port mapping
+- Application testing ve health check
 
 ### Kubernetes ile Deployment
 
-#### Deployment Oluşturma
-1. **Deployment YAML dosyasını kontrol et**:
-   - `deployment.yaml` dosyası mevcut mu?
-2. **Deployment'ı uygula**:
-   - `kubectl apply -f deployment.yaml`
-3. **Deployment durumunu kontrol et**:
-   - `kubectl get deployments`
-
-#### Service Oluşturma
-1. **Service YAML dosyasını kontrol et**:
-   - `service.yaml` dosyası mevcut mu?
-2. **Service'i uygula**:
-   - `kubectl apply -f service.yaml`
-3. **Service durumunu kontrol et**:
-   - `kubectl get services`
-
-#### Pod Kontrolü
-1. **Pod'ların çalıştığını kontrol et**:
-   - `kubectl get pods`
-2. **Pod detaylarını görüntüle**:
-   - `kubectl describe pod <pod-name>`
-
-#### Uygulamaya Erişim
-1. **Port forwarding ile erişim**:
-   - `kubectl port-forward svc/devops-application-service 8080:9090`
-2. **Uygulamayı test et**:
-   - `http://localhost:8080` adresine git
+### ⚙️ Kubernetes Deployment
+- Deployment YAML validation ve application
+- Service configuration ve networking
+- Pod status monitoring ve health checks
+- Port forwarding ve application access
 
 ## 🌐 API Endpoints
 
