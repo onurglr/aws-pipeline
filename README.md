@@ -123,13 +123,23 @@ aws-pipeline/
 
 ## 🏗️ Infrastructure Setup
 
+### AWS Instance Types (t4g.xlarge referans alınarak)
+
+| Makine | Instance Type | vCPU | RAM | Açıklama |
+|--------|---------------|------|-----|----------|
+| Jenkins Master | t4g.xlarge | 4 | 16GB | Ana CI/CD server |
+| Jenkins Agent | t4g.large | 2 | 8GB | Build işlemleri için |
+| SonarQube | t4g.medium | 2 | 4GB | Code quality analysis |
+| EKS Bootstrap | t4g.small | 2 | 2GB | Cluster management |
+| EKS Nodes | t4g.medium | 2 | 4GB | Application workloads |
+
 ### Makine 1: Jenkins Master Server
 
-#### Ubuntu 20.04+ Kurulumu
-1. **Ubuntu 20.04+** ISO dosyasını indir
-2. **VirtualBox/VMware** ile sanal makine oluştur
-3. **Minimum 4GB RAM, 50GB disk** ayır
-4. **Network**: Bridge mode (internet erişimi için)
+#### AWS EC2 Instance (t4g.xlarge)
+1. **Instance Type**: `t4g.xlarge` (4 vCPU, 16GB RAM, ARM64)
+2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
+3. **Storage**: 50GB GP3 EBS
+4. **Network**: VPC with internet gateway
 
 #### Java 21 Kurulumu
 1. **Terminal aç** ve güncelleme yap:
@@ -161,10 +171,11 @@ aws-pipeline/
 
 ### Makine 2: Jenkins Agent Server
 
-#### Agent Makinesi Hazırlığı
-1. **Ubuntu 20.04+** sanal makine oluştur
-2. **Minimum 8GB RAM, 100GB disk** ayır
-3. **Network**: Bridge mode
+#### AWS EC2 Instance (t4g.large)
+1. **Instance Type**: `t4g.large` (2 vCPU, 8GB RAM, ARM64)
+2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
+3. **Storage**: 100GB GP3 EBS
+4. **Network**: VPC with internet gateway
 
 #### Java 21 ve Maven Kurulumu
 1. **Java 21 JDK** kur
@@ -190,10 +201,11 @@ aws-pipeline/
 
 ### Makine 3: SonarQube Server
 
-#### SonarQube Makinesi Hazırlığı
-1. **Ubuntu 20.04+** sanal makine oluştur
-2. **Minimum 4GB RAM, 50GB disk** ayır
-3. **Network**: Bridge mode
+#### AWS EC2 Instance (t4g.medium)
+1. **Instance Type**: `t4g.medium` (2 vCPU, 4GB RAM, ARM64)
+2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
+3. **Storage**: 50GB GP3 EBS
+4. **Network**: VPC with internet gateway
 
 #### Java 11 Kurulumu
 1. **Java 11 JDK** kur (SonarQube için gerekli)
@@ -233,10 +245,11 @@ aws-pipeline/
 
 ### Makine 4: AWS EKS Server
 
-#### EKS Makinesi Hazırlığı
-1. **Ubuntu 20.04+** sanal makine oluştur
-2. **Minimum 4GB RAM, 50GB disk** ayır
-3. **Network**: Bridge mode
+#### AWS EC2 Instance (t4g.small)
+1. **Instance Type**: `t4g.small` (2 vCPU, 2GB RAM, ARM64)
+2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
+3. **Storage**: 30GB GP3 EBS
+4. **Network**: VPC with internet gateway
 
 #### Hostname Güncelleme
 1. **Hostname dosyasını düzenle**:
@@ -269,7 +282,7 @@ aws-pipeline/
 2. **EKS cluster** oluştur:
    - Cluster adı: `my-workspace-cluster`
    - Region: `us-east-2`
-   - Node type: `t3.large`
+   - Node type: `t4g.medium`
    - Node sayısı: `2`
 
 #### ArgoCD Kurulumu
@@ -522,7 +535,7 @@ spec:
 2. **Node name**: `My-Jenkins-Agent`
 3. **Type**: `Permanent Agent`
 4. **Node properties**:
-   - **Number of executors**: `2`
+   - **Number of executors**: `4` (t4g.xlarge için optimize edilmiş)
    - **Remote root directory**: `/home/jenkins`
    - **Labels**: `My-Jenkins-Agent`
    - **Usage**: `Only build jobs with label expressions matching this node`
@@ -756,14 +769,14 @@ kubectl rollout undo deployment/devops-application-deployment
 
 ## 📈 Performans ve Scaling
 
-### Resource Management
+### Resource Management (t4g.xlarge optimized)
 ```yaml
 resources:
   requests:
-    memory: "64Mi"
+    memory: "256Mi"
     cpu: "250m"
   limits:
-    memory: "128Mi"
+    memory: "512Mi"
     cpu: "500m"
 ```
 
@@ -960,7 +973,7 @@ kubectl get nodes
 
 # Cluster'ı yeniden oluştur
 eksctl delete cluster --name my-workspace-cluster --region us-east-2
-eksctl create cluster --name my-workspace-cluster --region us-east-2 --node-type t3.large --nodes 2
+eksctl create cluster --name my-workspace-cluster --region us-east-2 --node-type t4g.medium --nodes 2
 ```
 
 #### 2. AWS CLI Issues

@@ -16,8 +16,11 @@ spec:
         - name: devops-application
           image: onurguler18/devops-application:latest
           resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
             limits:
-              memory: "128Mi"
+              memory: "512Mi"
               cpu: "500m"
           ports:
             - containerPort: 8080   # Port of the .jar application inside the pod
