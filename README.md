@@ -1,46 +1,46 @@
-# 🚀 AWS DevOps Pipeline Project
+# 🚀 AWS DevOps Pipeline Projesi
 
 ## 📋 Proje Özeti
-Bu proje, modern DevOps pratiklerini kullanarak Spring Boot uygulamasının tam otomatik CI/CD pipeline'ını içerir. Jenkins, Docker, Kubernetes, SonarQube, Trivy ve AWS EKS teknolojileri kullanılarak geliştirilmiştir.
+Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının tam otomatik CI/CD sürecini içerir. Jenkins, Docker, Kubernetes, SonarQube, Trivy ve AWS EKS teknolojileri kullanılarak geliştirilmiştir.
 
-## 🛠️ Teknoloji Stack'i
+## 🛠️ Teknoloji Yığını
 
 | Teknoloji | Versiyon | Açıklama |
 |-----------|----------|----------|
 | **Java** | 21 | Backend programlama dili |
-| **Spring Boot** | 3.5.5 | Web framework |
-| **Maven** | 3.9+ | Build tool |
-| **Docker** | Latest | Containerization |
-| **Kubernetes** | 1.30+ | Container orchestration |
-| **Jenkins** | 2.400+ | CI/CD automation |
-| **SonarQube** | 9.0+ | Code quality analysis |
-| **Trivy** | Latest | Security scanning |
-| **AWS EKS** | 1.30+ | Managed Kubernetes service |
+| **Spring Boot** | 3.5.5 | Web çatısı |
+| **Maven** | 3.9+ | Derleme aracı |
+| **Docker** | En Son | Kapsayıcılaştırma |
+| **Kubernetes** | 1.30+ | Kapsayıcı orkestrasyonu |
+| **Jenkins** | 2.400+ | CI/CD otomasyonu |
+| **SonarQube** | 9.0+ | Kod kalitesi analizi |
+| **Trivy** | En Son | Güvenlik taraması |
+| **AWS EKS** | 1.30+ | Yönetilen Kubernetes servisi |
 
 ## 🏗️ Sistem Mimarisi
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Developer     │    │     GitHub      │    │    Jenkins      │
-│                 │    │   Repository    │    │     Server      │
-│  Code Push      │───▶│                 │───▶│                 │
-│                 │    │  Webhook Trigger│    │  Pipeline Start │
+│   Geliştirici   │    │     GitHub      │    │    Jenkins      │
+│                 │    │   Depo          │    │     Sunucu      │
+│  Kod Gönderimi  │───▶│                 │───▶│                 │
+│                 │    │  Webhook Tetikleme│   │  Süreç Başlatma │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                                        │
                                                        ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Docker Hub    │    │   SonarQube     │    │     Trivy       │
 │                 │    │                 │    │                 │
-│  Image Storage  │◀───│  Code Quality   │◀───│ Security Scan   │
-│                 │    │   Analysis      │    │                 │
+│  Görüntü Depolama│◀───│  Kod Kalitesi   │◀───│ Güvenlik Tarama │
+│                 │    │   Analizi       │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │
          ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   AWS EKS       │    │   Kubernetes    │    │   Application   │
+│   AWS EKS       │    │   Kubernetes    │    │   Uygulama      │
 │                 │    │                 │    │                 │
-│  Cluster        │───▶│   Deployment    │───▶│   Production    │
-│  Management     │    │   & Service     │    │   Environment   │
+│  Küme           │───▶│   Dağıtım       │───▶│   Üretim        │
+│  Yönetimi       │    │   & Servis      │    │   Ortamı        │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -49,58 +49,58 @@ Bu proje, modern DevOps pratiklerini kullanarak Spring Boot uygulamasının tam 
 ### 📋 Pipeline Aşamaları
 
 #### 1. **Kaynak Kod Yönetimi (SCM)**
-- **GitHub Repository**: Kod değişikliklerinin takibi
-- **Branch Strategy**: Main branch'den otomatik tetikleme
-- **Webhook Integration**: Gerçek zamanlı build tetikleme
-- **Version Control**: Git tag'leri ile versiyon yönetimi
+- **GitHub Depo**: Kod değişikliklerinin takibi
+- **Dal Stratejisi**: Ana dal'dan otomatik tetikleme
+- **Webhook Entegrasyonu**: Gerçek zamanlı derleme tetikleme
+- **Sürüm Kontrolü**: Git etiketleri ile sürüm yönetimi
 
 #### 2. **Test Aşaması**
-- **Unit Testing**: Maven test framework ile otomatik testler
-- **Test Coverage**: Kod kapsamı analizi ve raporlama
-- **Quality Metrics**: Test başarı oranı ve performans metrikleri
-- **Test Results**: Jenkins dashboard'da test sonuçları görüntüleme
+- **Birim Testleri**: Maven test çatısı ile otomatik testler
+- **Test Kapsamı**: Kod kapsamı analizi ve raporlama
+- **Kalite Metrikleri**: Test başarı oranı ve performans metrikleri
+- **Test Sonuçları**: Jenkins kontrol panelinde test sonuçları görüntüleme
 
-#### 3. **Build Aşaması**
-- **Maven Build**: Clean install ile proje derleme
-- **Dependency Management**: Bağımlılık çözümleme ve kontrolü
-- **Artifact Creation**: JAR dosyası oluşturma ve doğrulama
-- **Build Optimization**: Build süre optimizasyonu ve cache kullanımı
+#### 3. **Derleme Aşaması**
+- **Maven Derleme**: Temiz kurulum ile proje derleme
+- **Bağımlılık Yönetimi**: Bağımlılık çözümleme ve kontrolü
+- **Eser Oluşturma**: JAR dosyası oluşturma ve doğrulama
+- **Derleme Optimizasyonu**: Derleme süre optimizasyonu ve önbellek kullanımı
 
 #### 4. **Kod Kalitesi Analizi**
-- **SonarQube Integration**: Kod kalitesi ve güvenlik analizi
-- **Code Smell Detection**: Kod kokularının tespiti ve düzeltme önerileri
-- **Vulnerability Scanning**: Güvenlik açıklarının tespiti
-- **Quality Gate**: Kalite kriterlerinin karşılanması kontrolü
+- **SonarQube Entegrasyonu**: Kod kalitesi ve güvenlik analizi
+- **Kod Kokusu Tespiti**: Kod kokularının tespiti ve düzeltme önerileri
+- **Güvenlik Taraması**: Güvenlik açıklarının tespiti
+- **Kalite Kapısı**: Kalite kriterlerinin karşılanması kontrolü
 
-#### 5. **Containerization**
-- **Docker Build**: Multi-stage build ile optimize edilmiş image oluşturma
-- **Image Tagging**: Versiyon numarası ile image etiketleme
-- **Registry Push**: DockerHub'a güvenli image yükleme
-- **Image Optimization**: Boyut optimizasyonu ve güvenlik taraması
+#### 5. **Kapsayıcılaştırma**
+- **Docker Derleme**: Çok aşamalı derleme ile optimize edilmiş görüntü oluşturma
+- **Görüntü Etiketleme**: Sürüm numarası ile görüntü etiketleme
+- **Kayıt Defteri Gönderimi**: DockerHub'a güvenli görüntü yükleme
+- **Görüntü Optimizasyonu**: Boyut optimizasyonu ve güvenlik taraması
 
 #### 6. **Güvenlik Taraması**
-- **Trivy Integration**: Container image güvenlik taraması
-- **Vulnerability Assessment**: HIGH ve CRITICAL seviye güvenlik açıklarının kontrolü
-- **Security Reports**: Güvenlik raporlarının oluşturulması
-- **Compliance Check**: Güvenlik standartlarına uygunluk kontrolü
+- **Trivy Entegrasyonu**: Kapsayıcı görüntü güvenlik taraması
+- **Güvenlik Açığı Değerlendirmesi**: YÜKSEK ve KRİTİK seviye güvenlik açıklarının kontrolü
+- **Güvenlik Raporları**: Güvenlik raporlarının oluşturulması
+- **Uyumluluk Kontrolü**: Güvenlik standartlarına uygunluk kontrolü
 
-#### 7. **Kubernetes Deployment**
-- **EKS Integration**: AWS EKS cluster'a otomatik deployment
-- **Service Configuration**: Load balancer ve service konfigürasyonu
-- **Health Checks**: Pod sağlık kontrolü ve readiness probe
-- **Rolling Update**: Sıfır downtime ile güncelleme
+#### 7. **Kubernetes Dağıtımı**
+- **EKS Entegrasyonu**: AWS EKS kümesine otomatik dağıtım
+- **Servis Yapılandırması**: Yük dengeleyici ve servis yapılandırması
+- **Sağlık Kontrolleri**: Pod sağlık kontrolü ve hazırlık sondası
+- **Yuvarlanma Güncellemesi**: Sıfır kesinti süresi ile güncelleme
 
-#### 8. **Monitoring ve Logging**
-- **Application Monitoring**: Uygulama performans ve sağlık takibi
-- **Log Aggregation**: Merkezi log toplama ve analiz
-- **Alerting**: Kritik durumlar için otomatik uyarı sistemi
-- **Dashboard**: Gerçek zamanlı monitoring dashboard'u
+#### 8. **İzleme ve Günlük Tutma**
+- **Uygulama İzleme**: Uygulama performans ve sağlık takibi
+- **Günlük Toplama**: Merkezi günlük toplama ve analiz
+- **Uyarı Sistemi**: Kritik durumlar için otomatik uyarı sistemi
+- **Kontrol Paneli**: Gerçek zamanlı izleme kontrol paneli
 
-#### 9. **Cleanup ve Optimizasyon**
-- **Resource Cleanup**: Eski image'ların ve container'ların temizlenmesi
-- **Disk Optimization**: Disk alanı optimizasyonu
-- **Performance Tuning**: Sistem performans ayarları
-- **Cost Optimization**: AWS maliyet optimizasyonu
+#### 9. **Temizlik ve Optimizasyon**
+- **Kaynak Temizliği**: Eski görüntülerin ve kapsayıcıların temizlenmesi
+- **Disk Optimizasyonu**: Disk alanı optimizasyonu
+- **Performans Ayarları**: Sistem performans ayarları
+- **Maliyet Optimizasyonu**: AWS maliyet optimizasyonu
 
 ## 📁 Proje Yapısı
 
@@ -109,32 +109,32 @@ aws-pipeline/
 ├── src/
 │   ├── main/
 │   │   ├── java/com/onurguler/
-│   │   │   ├── AppMain.java              # Spring Boot main class
+│   │   │   ├── AppMain.java              # Spring Boot ana sınıf
 │   │   │   └── controller/
-│   │   │       └── DevOpsController.java # REST API endpoints
+│   │   │       └── DevOpsController.java # REST API uç noktaları
 │   │   └── resources/
-│   │       └── application.properties    # App configuration
-│   └── test/                             # Test classes
-├── target/                               # Build artifacts
-├── Dockerfile                           # Docker configuration
-├── deployment.yaml                      # K8s deployment
-├── service.yaml                         # K8s service
-├── Jenkinsfile                          # CI/CD pipeline
-├── pom.xml                             # Maven configuration
-└── README.md                           # Project documentation
+│   │       └── application.properties    # Uygulama yapılandırması
+│   └── test/                             # Test sınıfları
+├── target/                               # Derleme eserleri
+├── Dockerfile                           # Docker yapılandırması
+├── deployment.yaml                      # K8s dağıtımı
+├── service.yaml                         # K8s servisi
+├── Jenkinsfile                          # CI/CD süreci
+├── pom.xml                             # Maven yapılandırması
+└── README.md                           # Proje dokümantasyonu
 ```
 
-## 🏗️ Infrastructure Setup
+## 🏗️ Altyapı Kurulumu
 
-### AWS Instance Types (t4g.xlarge referans alınarak)
+### AWS Örnek Türleri (t4g.xlarge referans alınarak)
 
-| Makine | Instance Type | vCPU | RAM | Storage | Açıklama |
+| Makine | Örnek Türü | vCPU | RAM | Depolama | Açıklama |
 |--------|---------------|------|-----|---------|----------|
-| Jenkins Master | t4g.xlarge | 4 | 16GB | 15GB | Ana CI/CD server |
-| Jenkins Agent | t4g.large | 2 | 8GB | 15GB | Build işlemleri için |
-| SonarQube | t4g.medium | 2 | 4GB | 15GB | Code quality analysis |
-| EKS Bootstrap | t4g.small | 2 | 2GB | 15GB | Cluster management |
-| EKS Nodes | t4g.medium | 2 | 4GB | 15GB | Application workloads |
+| Jenkins Ana | t4g.xlarge | 4 | 16GB | 15GB | Ana CI/CD sunucusu |
+| Jenkins Ajan | t4g.large | 2 | 8GB | 15GB | Derleme işlemleri için |
+| SonarQube | t4g.medium | 2 | 4GB | 15GB | Kod kalitesi analizi |
+| EKS Bootstrap | t4g.small | 2 | 2GB | 15GB | Küme yönetimi |
+| EKS Düğümleri | t4g.medium | 2 | 4GB | 15GB | Uygulama iş yükleri |
 
 ### Makine 1: Jenkins Master Server
 
@@ -239,12 +239,12 @@ aws-pipeline/
 
 ## 🚀 Application Deployment
 
-### 📦 Temel Deployment
+### 📦 Temel Dağıtım
 - Git repository cloning ve Maven build process
 - Docker image building ve container deployment
 - Kubernetes deployment ve service configuration
 
-## 🌐 API Endpoints
+## 🌐 API Uç Noktaları
 
 | Endpoint | Method | Açıklama |
 |----------|--------|----------|
@@ -252,7 +252,7 @@ aws-pipeline/
 | `/info` | GET | Uygulama bilgileri |
 | `/about` | GET | Hakkında bilgisi |
 
-### Örnek Response
+### Örnek Yanıt
 ```json
 {
   "message": "Version3 Hi Hello: 2024-01-15T10:30:45.123",
@@ -300,89 +300,89 @@ aws-pipeline/
 
 ## 🔧 Jenkins Konfigürasyonu ve Bağlantıları
 
-### 🔧 Jenkins Configuration
+### 🔧 Jenkins Konfigürasyonu
 
-#### 🚀 Initial Setup
+#### 🚀 İlk Kurulum
 - Admin password retrieval ve web interface access
 - Plugin installation (Docker, Kubernetes, SonarQube, Trivy, Git, Maven)
 - Admin user creation ve security configuration
 - Jenkins service restart ve validation
 
-#### 🔐 Credentials Management
+#### 🔐 Kimlik Bilgileri Yönetimi
 - DockerHub authentication (Personal Access Token)
 - SonarQube token generation ve configuration
 - Kubernetes kubeconfig file upload
 - Jenkins API token creation
 - GitHub personal access token setup
 
-#### 🤖 Agent Connection
+#### 🤖 Ajan Bağlantısı
 - SSH key generation ve Master-Agent authentication
 - Node configuration (4 executors for t4g.xlarge optimization)
 - Agent connection testing ve status validation
 
-#### ⚙️ Global Tools Setup
+#### ⚙️ Global Araçlar Kurulumu
 - Maven 3.9.0 automatic installation configuration
 - Java 21 JDK automatic installation setup
 - Tool validation ve version verification
 
-#### 📋 Pipeline Job Creation
+#### 📋 Pipeline İş Oluşturma
 - New pipeline job creation (aws-pipeline)
 - SCM configuration (Git repository integration)
 - Build triggers setup (GitHub webhook ve SCM polling)
 
-#### 🔍 SonarQube Configuration
+#### 🔍 SonarQube Konfigürasyonu
 - Project creation (aws-pipeline project setup)
 - Quality Gate configuration (Coverage >80%, Security Rating A)
 - Project validation ve integration testing
 
-#### 🔄 ArgoCD Setup
+#### 🔄 ArgoCD Kurulumu
 - ArgoCD web interface access ve authentication
 - Application creation (devops-application)
 - Automatic sync policy configuration
 - Repository ve cluster integration
 
-#### ✅ Pipeline Validation
+#### ✅ Pipeline Doğrulama
 - Initial build testing ve console output monitoring
 - Integration validation (Docker Hub, SonarQube, Kubernetes, ArgoCD)
 - Dashboard monitoring ve status verification
 
 
-## 📊 Monitoring ve Logging
+## 📊 İzleme ve Günlük Tutma
 
-### 🔧 Jenkins Monitoring
+### 🔧 Jenkins İzleme
 - Build status API integration ve console output monitoring
 - Jenkins log tracking ve system log configuration
 - Disk usage monitoring ve build artifact cleanup
 
-### ⚙️ Kubernetes Monitoring
+### ⚙️ Kubernetes İzleme
 - Pod status monitoring ve detailed pod inspection
 - Service status tracking ve cluster health checks
 - Real-time log monitoring ve log rotation setup
 
-### 🔍 SonarQube Monitoring
+### 🔍 SonarQube İzleme
 - System status API integration ve web interface monitoring
 - SonarQube log tracking ve administration configuration
 - PostgreSQL database status ve size monitoring
 
-### 🔄 ArgoCD Monitoring
+### 🔄 ArgoCD İzleme
 - Application status tracking ve sync monitoring
 - ArgoCD server ve application controller log monitoring
 - Application history ve sync validation
 
 ## 🔒 Güvenlik
 
-### Security Scanning
+### Güvenlik Taraması
 - **Trivy**: Container image güvenlik taraması
 - **SonarQube**: Kod kalitesi ve güvenlik analizi
 - **Docker**: Multi-stage build ile güvenli image oluşturma
 
-### Best Practices
+### En İyi Uygulamalar
 - Container image'ları güncel base image'larla oluşturma
 - Resource limits tanımlama
 - Security scanning'i pipeline'a entegre etme
 - Secrets management
 
-## 🚀 Deployment Stratejisi
+## 🚀 Dağıtım Stratejisi
 
 ### Rolling Update
 ```bash
@@ -396,9 +396,9 @@ kubectl rollout status deployment/devops-application-deployment
 kubectl rollout undo deployment/devops-application-deployment
 ```
 
-## 📈 Performans ve Scaling
+## 📈 Performans ve Ölçeklendirme
 
-### Resource Management (t4g.xlarge optimized)
+### Kaynak Yönetimi (t4g.xlarge optimize edilmiş)
 ```yaml
 resources:
   requests:
@@ -409,7 +409,7 @@ resources:
     cpu: "500m"
 ```
 
-### Auto Scaling
+### Otomatik Ölçeklendirme
 ```yaml
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -431,46 +431,46 @@ spec:
         averageUtilization: 70
 ```
 
-## 🛠️ Troubleshooting
+## 🛠️ Sorun Giderme
 
-### 🔧 Jenkins Issues
+### 🔧 Jenkins Sorunları
 - Build failure diagnostics ve log analysis
 - Agent connection troubleshooting ve SSH validation
 - Service restart procedures ve status verification
 
-### ⚙️ Kubernetes Issues
+### ⚙️ Kubernetes Sorunları
 - Pod crash diagnostics ve restart procedures
 - Service connection troubleshooting ve endpoint validation
 - Image pull issues ve Docker Hub connectivity
 
-### 🐳 Docker Issues
+### 🐳 Docker Sorunları
 - Build failure diagnostics ve daemon status checks
 - Docker Hub push issues ve authentication troubleshooting
 - Disk space management ve cleanup procedures
 
-### 🔍 SonarQube Issues
+### 🔍 SonarQube Sorunları
 - Service startup issues ve log analysis
 - Quality gate failure troubleshooting ve project status checks
 - PostgreSQL connectivity ve database validation
 
-### 🔄 ArgoCD Issues
+### 🔄 ArgoCD Sorunları
 - Sync failure diagnostics ve manual sync procedures
 - Connection issues ve service restart procedures
 - Application status validation ve troubleshooting
 
-### ☁️ EKS Issues
+### ☁️ EKS Sorunları
 - Cluster status monitoring ve recreation procedures
 - AWS CLI configuration ve credentials management
 - Node status validation ve cluster health checks
 
 ## 📚 Kaynaklar
 
-- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
-- [Docker Documentation](https://docs.docker.com/)
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
-- [Jenkins Documentation](https://www.jenkins.io/doc/)
-- [SonarQube Documentation](https://docs.sonarqube.org/)
-- [Trivy Documentation](https://aquasecurity.github.io/trivy/)
+- [Spring Boot Dokümantasyonu](https://spring.io/projects/spring-boot)
+- [Docker Dokümantasyonu](https://docs.docker.com/)
+- [Kubernetes Dokümantasyonu](https://kubernetes.io/docs/)
+- [Jenkins Dokümantasyonu](https://www.jenkins.io/doc/)
+- [SonarQube Dokümantasyonu](https://docs.sonarqube.org/)
+- [Trivy Dokümantasyonu](https://aquasecurity.github.io/trivy/)
 
 ## 🤝 Katkıda Bulunma
 
