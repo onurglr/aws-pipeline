@@ -113,6 +113,56 @@ Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının 
 - HIGH ve CRITICAL seviye açıklar için build'i durdurur
 - Güvenlik raporları oluşturur
 
+##### **Trivy'nin Ana Bağlantıları:**
+
+**🔗 Jenkins Pipeline Bağlantısı:**
+- **Security Scanner Integration**: Container güvenlik taraması yapar
+- **Vulnerability Database**: CVE database ile güvenlik açıklarını tespit eder
+- **Report Processing**: Güvenlik raporlarını analiz eder
+- **Build Control**: Güvenlik açığı durumuna göre build'i durdurur/devam ettirir
+
+**🔗 Docker Image Bağlantısı:**
+- **Image Scanning**: Docker image'larını güvenlik açıklarına karşı tarar
+- **Layer Analysis**: Image katmanlarını detaylı analiz eder
+- **Vulnerability Detection**: Bilinen güvenlik açıklarını tespit eder
+- **Security Report**: Detaylı güvenlik raporları oluşturur
+
+**🔗 CVE Database Bağlantısı:**
+- **Vulnerability Database**: Güncel CVE veritabanını kullanır
+- **Security Updates**: Yeni güvenlik açıklarını takip eder
+- **Risk Assessment**: Güvenlik risklerini değerlendirir
+- **Compliance Check**: Güvenlik standartlarına uygunluk kontrolü
+
+##### **Trivy Entegrasyon Diyagramı:**
+```mermaid
+graph TB
+    T[🔒 Trivy] --> J[🚀 Jenkins]
+    T --> D[🐳 Docker]
+    T --> CVE[🗄️ CVE Database]
+    
+    style T fill:#ffebee
+    style J fill:#fff3e0
+    style D fill:#e3f2fd
+    style CVE fill:#f3e5f5
+```
+
+##### **Detaylı Bağlantı Akışları:**
+
+**Jenkins → Trivy Bağlantısı:**
+```
+Jenkins Build → Trivy Scan → Security Report → Vulnerability Check → Build Control
+```
+
+**Trivy → Docker Image Bağlantısı:**
+```
+Docker Image → Trivy Scan → Layer Analysis → Vulnerability Detection → Security Report
+```
+
+**Trivy → CVE Database Bağlantısı:**
+```
+Image Scan → CVE Database Query → Vulnerability Match → Risk Assessment → Security Report
+```
+
 #### 🔄 **ArgoCD - GitOps Yöneticisi**
 **Neden Gerekli:**
 - GitOps prensiplerini uygulayarak deployment'ları Git'te saklamak
@@ -586,7 +636,58 @@ aws-pipeline/
 - Java 21 JDK ve Maven kurulumu
 - Sürüm kontrolü ve doğrulama
 
-#### 🐳 Docker Setup
+#### 🐳 Docker Setup ve Bağlantıları
+
+##### **Docker'ın Ana Bağlantıları:**
+
+**🔗 Jenkins Pipeline Bağlantısı:**
+- **Build Trigger**: Jenkins'ten build komutlarını alır
+- **Multi-stage Build**: Optimize edilmiş image oluşturma süreçleri
+- **Registry Integration**: DockerHub'a image push işlemleri
+- **Build Status**: Build durumunu Jenkins'e bildirir
+
+**🔗 DockerHub Registry Bağlantısı:**
+- **Image Storage**: Oluşturulan image'ları merkezi olarak saklar
+- **Version Management**: Tag'ler ile sürüm yönetimi
+- **Pull Access**: Kubernetes'in image'ları çekebilmesi
+- **Security Scanning**: Registry seviyesinde güvenlik taraması
+
+**🔗 Kubernetes Cluster Bağlantısı:**
+- **Image Pull**: Kubernetes'in image'ları çekmesi
+- **Container Runtime**: Pod'ların çalıştırılması
+- **Resource Management**: Container resource limitleri
+- **Health Monitoring**: Container sağlık durumu izleme
+
+##### **Docker Entegrasyon Diyagramı:**
+```mermaid
+graph TB
+    D[🐳 Docker] --> J[🚀 Jenkins]
+    D --> DH[📦 DockerHub]
+    D --> K[⚙️ Kubernetes]
+    
+    style D fill:#e3f2fd
+    style J fill:#fff3e0
+    style DH fill:#f1f8e9
+    style K fill:#fce4ec
+```
+
+##### **Detaylı Bağlantı Akışları:**
+
+**Jenkins → Docker Bağlantısı:**
+```
+Jenkins Build → Docker Build → Multi-stage Process → Image Creation → Build Success
+```
+
+**Docker → DockerHub Bağlantısı:**
+```
+Docker Image → Registry Push → Version Tagging → Storage → Pull Access
+```
+
+**DockerHub → Kubernetes Bağlantısı:**
+```
+Kubernetes Deploy → Image Pull → Container Creation → Pod Management → Application Running
+```
+
 - Docker engine kurulumu ve konfigürasyonu
 - Docker Hub authentication
 - User permissions ve grup ayarları
@@ -615,7 +716,58 @@ aws-pipeline/
 - SonarQube database ve user oluşturma
 - Database permissions ve access ayarları
 
-#### 🔍 SonarQube Installation
+#### 🔍 SonarQube Installation ve Bağlantıları
+
+##### **SonarQube'un Ana Bağlantıları:**
+
+**🔗 Jenkins Pipeline Bağlantısı:**
+- **Quality Gate Integration**: Kod kalitesi kontrolü yapar
+- **API Communication**: SonarQube API ile kalite metriklerini alır
+- **Report Integration**: Quality gate sonuçlarını pipeline'a entegre eder
+- **Token Authentication**: SonarQube token ile güvenli bağlantı
+
+**🔗 PostgreSQL Database Bağlantısı:**
+- **Data Storage**: Analiz sonuçlarını ve metrikleri saklar
+- **User Management**: Kullanıcı bilgileri ve yetkilendirme
+- **Project Data**: Proje bazlı kalite verileri
+- **History Tracking**: Geçmiş analiz sonuçları
+
+**🔗 GitHub Repository Bağlantısı:**
+- **Code Analysis**: Repository'deki kodu analiz eder
+- **Quality Metrics**: Kod kalitesi metriklerini hesaplar
+- **Security Scanning**: Güvenlik açıklarını tespit eder
+- **Code Coverage**: Test coverage analizi yapar
+
+##### **SonarQube Entegrasyon Diyagramı:**
+```mermaid
+graph TB
+    SQ[🔍 SonarQube] --> J[🚀 Jenkins]
+    SQ --> PG[🐘 PostgreSQL]
+    SQ --> GH[📁 GitHub]
+    
+    style SQ fill:#e8f5e8
+    style J fill:#fff3e0
+    style PG fill:#f3e5f5
+    style GH fill:#e1f5fe
+```
+
+##### **Detaylı Bağlantı Akışları:**
+
+**Jenkins → SonarQube Bağlantısı:**
+```
+Jenkins Build → SonarQube Analysis → Quality Gate → Pass/Fail Decision → Build Control
+```
+
+**SonarQube → PostgreSQL Bağlantısı:**
+```
+Code Analysis → Quality Metrics → Database Storage → User Access → Report Generation
+```
+
+**SonarQube → GitHub Bağlantısı:**
+```
+Repository Access → Code Analysis → Quality Metrics → Security Scanning → Report Generation
+```
+
 - SonarQube binary indirme ve kurulum
 - File permissions ve ownership ayarları
 - SonarQube service başlatma ve konfigürasyon
@@ -638,7 +790,58 @@ aws-pipeline/
 - AWS CLI kurulumu ve konfigürasyonu
 - AWS credentials setup ve validation
 
-#### ⚙️ Kubernetes Tools
+#### ⚙️ Kubernetes Tools ve Bağlantıları
+
+##### **Kubernetes'un Ana Bağlantıları:**
+
+**🔗 Jenkins Pipeline Bağlantısı:**
+- **Deployment Management**: Kubernetes deployment süreçlerini yönetir
+- **kubectl Integration**: Kubernetes API ile cluster yönetimi
+- **Resource Management**: Pod, Service, ConfigMap yönetimi
+- **Namespace Operations**: Farklı namespace'lerde işlem yapma
+
+**🔗 DockerHub Registry Bağlantısı:**
+- **Image Pull**: DockerHub'dan image'ları çeker
+- **Container Runtime**: Pod'ları çalıştırır
+- **Resource Management**: Container resource limitleri
+- **Health Monitoring**: Container sağlık durumu izleme
+
+**🔗 ArgoCD GitOps Bağlantısı:**
+- **State Management**: Desired state ile current state'i senkronize eder
+- **Resource Monitoring**: Pod, Service, Deployment durumlarını izler
+- **Sync Operations**: Otomatik senkronizasyon yapar
+- **Rollback Management**: Hızlı geri alma işlemleri sağlar
+
+##### **Kubernetes Entegrasyon Diyagramı:**
+```mermaid
+graph TB
+    K[⚙️ Kubernetes] --> J[🚀 Jenkins]
+    K --> DH[📦 DockerHub]
+    K --> A[🔄 ArgoCD]
+    
+    style K fill:#fce4ec
+    style J fill:#fff3e0
+    style DH fill:#f1f8e9
+    style A fill:#e0f2f1
+```
+
+##### **Detaylı Bağlantı Akışları:**
+
+**Jenkins → Kubernetes Bağlantısı:**
+```
+Jenkins Deploy → kubectl Apply → Resource Creation → Status Check → Deployment Success
+```
+
+**DockerHub → Kubernetes Bağlantısı:**
+```
+Kubernetes Deploy → Image Pull → Container Creation → Pod Management → Application Running
+```
+
+**Kubernetes ↔ ArgoCD Bağlantısı:**
+```
+ArgoCD Sync → Kubernetes API → Resource Comparison → Sync Decision → Apply Changes
+```
+
 - kubectl client kurulumu
 - eksctl cluster management tool kurulumu
 - Version kontrolü ve doğrulama
@@ -755,52 +958,11 @@ aws-pipeline/
 ##### **Jenkins Entegrasyon Diyagramı:**
 ```mermaid
 graph TB
-    subgraph "Jenkins Core Connections"
-        J[🚀 Jenkins] --> GH[📁 GitHub Repository]
-        J --> SQ[🔍 SonarQube]
-        J --> T[🔒 Trivy]
-        J --> D[🐳 Docker]
-        J --> K[⚙️ Kubernetes]
-    end
-    
-    subgraph "GitHub Integration Details"
-        GH --> G1[📋 Webhook Events]
-        GH --> G2[🔍 Code Checkout]
-        GH --> G3[📊 Branch Monitoring]
-        GH --> G4[🏷️ Tag Management]
-    end
-    
-    subgraph "SonarQube Integration Details"
-        SQ --> S1[📊 Quality Gates]
-        SQ --> S2[🔍 Code Analysis]
-        SQ --> S3[📈 Metrics Collection]
-        SQ --> S4[🔒 Security Checks]
-    end
-    
-    subgraph "Trivy Integration Details"
-        T --> T1[🔍 Vulnerability Scan]
-        T --> T2[📋 Security Reports]
-        T --> T3[🚨 Risk Assessment]
-        T --> T4[🔒 Compliance Check]
-    end
-    
-    subgraph "Docker Integration Details"
-        D --> D1[🏗️ Image Building]
-        D --> D2[📤 Registry Push]
-        D --> D3[🏷️ Image Tagging]
-        D --> D4[🔒 Security Scan]
-    end
-    
-    subgraph "Kubernetes Integration Details"
-        K --> K1[📦 Deployment Management]
-        K --> K2[🌐 Service Management]
-        K --> K3[📊 Resource Monitoring]
-        K --> K4[🔄 Rolling Updates]
-    end
-    
-    J --> P[📋 Pipeline Controller]
-    J --> N[📧 Notification System]
-    J --> L[📊 Build Logs]
+    J[🚀 Jenkins] --> GH[📁 GitHub]
+    J --> SQ[🔍 SonarQube]
+    J --> T[🔒 Trivy]
+    J --> D[🐳 Docker]
+    J --> K[⚙️ Kubernetes]
     
     style J fill:#fff3e0
     style GH fill:#f3e5f5
@@ -894,36 +1056,9 @@ Jenkins Deploy → kubectl Apply → Resource Creation → Status Check → Depl
 ##### **ArgoCD Entegrasyon Diyagramı:**
 ```mermaid
 graph TB
-    subgraph "ArgoCD Core Connections"
-        A[🔄 ArgoCD] --> GH[📁 GitHub Repository]
-        A --> K[⚙️ Kubernetes Cluster]
-        A --> J[🚀 Jenkins Pipeline]
-    end
-    
-    subgraph "GitHub Integration Details"
-        GH --> G1[📋 Manifest Files]
-        GH --> G2[🔍 Branch Monitoring]
-        GH --> G3[📊 Commit Tracking]
-        GH --> G4[🏷️ Tag Management]
-    end
-    
-    subgraph "Kubernetes Integration Details"
-        K --> K1[📦 Pod Management]
-        K --> K2[🌐 Service Management]
-        K --> K3[📈 Deployment Management]
-        K --> K4[🔧 ConfigMap/Secret Management]
-    end
-    
-    subgraph "Jenkins Integration Details"
-        J --> J1[📊 Build Status]
-        J --> J2[🔄 Deployment Events]
-        J --> J3[📧 Notification System]
-        J --> J4[🔙 Rollback Triggers]
-    end
-    
-    A --> I[📊 ArgoCD Dashboard]
-    A --> L[📋 Application Controller]
-    A --> M[🔔 Notification Controller]
+    A[🔄 ArgoCD] --> GH[📁 GitHub]
+    A --> K[⚙️ Kubernetes]
+    A --> J[🚀 Jenkins]
     
     style A fill:#e0f2f1
     style GH fill:#f3e5f5
