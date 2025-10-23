@@ -175,6 +175,7 @@ Image Scan → CVE Database Query → Vulnerability Match → Risk Assessment �
 - Kubernetes cluster'da desired state'i otomatik sağlar
 - Drift detection ile configuration değişikliklerini algılar
 - Hızlı rollback ve multi-environment sync sağlar
+- **GitOps Repository**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository'sini kullanarak manifest dosyalarını yönetir
 
 ### 🔗 Araçların Birlikte Çalışma Süreci
 
@@ -204,7 +205,7 @@ Kubernetes, container'ları production'da yönetir:
 
 #### **4. 🔄 ArgoCD - GitOps Yöneticisi**
 ArgoCD, GitOps prensiplerini uygular:
-- GitHub repository'yi sürekli izler
+- [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository'yi sürekli izler
 - Jenkins deployment'ını takip eder
 - Kubernetes cluster'da desired state'i sağlar
 - Drift detection ile configuration değişikliklerini algılar
@@ -233,7 +234,7 @@ Kubernetes → DockerHub'dan image pull eder
     ↓
 Kubernetes → Pod'ları oluşturur ve çalıştırır
     ↓
-ArgoCD → GitHub repository değişikliklerini algılar
+ArgoCD → aws-pipeline-gitops repository değişikliklerini algılar
     ↓
 ArgoCD → Kubernetes cluster'da desired state'i sağlar
 ```
@@ -310,7 +311,7 @@ Jenkins → Trivy Scan → Security Report → Build Continue/Stop
 
 #### **🔄 ArgoCD - GitOps Yöneticisi**
 **Ana Rolü:**
-- **Git Watcher**: GitHub repository değişikliklerini izler
+- **Git Watcher**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository değişikliklerini izler
 - **State Manager**: Kubernetes cluster'da desired state'i sağlar
 - **Sync Controller**: Otomatik senkronizasyon yapar
 - **Rollback Manager**: Hızlı geri alma işlemleri sağlar
@@ -318,7 +319,7 @@ Jenkins → Trivy Scan → Security Report → Build Continue/Stop
 
 **Çalışma Yönü:**
 ```
-GitHub ←→ ArgoCD ←→ Kubernetes Cluster
+aws-pipeline-gitops ←→ ArgoCD ←→ Kubernetes Cluster
 ```
 
 ### 🔄 Araçlar Arası Çalışma Yönleri
@@ -340,7 +341,7 @@ ArgoCD Sync Status → Jenkins Build Status → Pipeline Notification
 2. **Jenkins** test, build, quality check ve security scan yapar
 3. **Jenkins** Docker image oluşturur ve registry'ye push eder
 4. **Jenkins** Kubernetes'e deployment komutu gönderir
-5. **ArgoCD** GitHub repository değişikliklerini algılar
+5. **ArgoCD** [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository değişikliklerini algılar
 6. **ArgoCD** Kubernetes cluster'da desired state'i kontrol eder
 7. **ArgoCD** Otomatik sync yapar ve drift'i düzeltir
 8. **ArgoCD** Jenkins'e sync durumu hakkında bildirim gönderir
@@ -386,7 +387,7 @@ ArgoCD ←→ Kubernetes Status ←→ Jenkins Build Status ←→ SonarQube Met
 
 **Rollback Süreci:**
 ```
-ArgoCD Rollback → Kubernetes Rollback → Jenkins Notification → GitHub Status Update
+ArgoCD Rollback → Kubernetes Rollback → Jenkins Notification → aws-pipeline-gitops Status Update
 ```
 
 ### 📊 Görsel Entegrasyon Diyagramları
@@ -1040,6 +1041,7 @@ Jenkins Deploy → kubectl Apply → Resource Creation → Status Check → Depl
 - **Webhook Integration**: Repository değişikliklerini anlık algılar
 - **Manifest Tracking**: Kubernetes manifest dosyalarını takip eder
 - **Branch Monitoring**: Main branch ve feature branch'leri izler
+- **GitOps Repository**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository'sini kullanır
 
 **🔗 Kubernetes Cluster Bağlantısı:**
 - **Cluster Authentication**: Kubeconfig ile cluster'a bağlanır
@@ -1070,7 +1072,7 @@ graph TB
 
 **GitHub → ArgoCD Bağlantısı:**
 ```
-GitHub Repository → Webhook → ArgoCD Detection → Manifest Analysis → Desired State Update
+GitHub Repository (aws-pipeline-gitops) → Webhook → ArgoCD Detection → Manifest Analysis → Desired State Update
 ```
 
 **ArgoCD → Kubernetes Bağlantısı:**
@@ -1087,6 +1089,7 @@ Jenkins Deploy → ArgoCD Detection → Sync Process → Status Update → Jenki
 - Application creation (devops-application)
 - Automatic sync policy configuration
 - Repository ve cluster integration
+- **GitOps Repository Setup**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository'sini ArgoCD'ye bağlama
 
 #### ✅ Pipeline Doğrulama
 - Initial build testing ve console output monitoring

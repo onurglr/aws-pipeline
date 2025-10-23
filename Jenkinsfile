@@ -11,7 +11,7 @@ pipeline {
     }
 
     environment {
-        APP_NAME = "devops-03-pipeline-aws"
+        APP_NAME = "aws-pipeline"
         RELEASE = "1.0"
         DOCKER_USER = "onurguler18"
         DOCKER_LOGIN = 'dockerhub'
@@ -97,9 +97,9 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image mimaraslan/devops-03-pipeline-aws:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
+                        sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image onurguler18/aws-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
                     } else {
-                        bat ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image mimaraslan/devops-03-pipeline-aws:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
+                        bat ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image onurguler18/aws-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
                     }
                 }
             }
@@ -155,7 +155,7 @@ pipeline {
         stage("Trigger CD Pipeline") {
             steps {
                 script {
-                    sh "curl -v -k --user admin:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-35-169-94-227.compute-1.amazonaws.com:8080/job/devops-03-pipeline-aws-gitops-v2/buildWithParameters?token=GITOPS_TRIGGER_START'"
+                    sh "curl -v -k --user admin:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2.amazonaws.com:8080/job/aws-pipeline-gitops-v2/buildWithParameters?token=GITOPS_TRIGGER_START'"
                 }
             }
         }
