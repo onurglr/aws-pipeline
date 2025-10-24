@@ -355,6 +355,19 @@ graph TB
 - **GitHub webhook** entegrasyonu
 - **Agent bağlantısı** kurulumu
 
+#### 🔌 Gerekli Jenkins Plugin'leri
+- **Git Plugin** - Git repository entegrasyonu
+- **GitHub Plugin** - GitHub webhook ve entegrasyonu
+- **Maven Integration Plugin** - Maven build desteği
+- **Docker Plugin** - Docker build ve push işlemleri
+- **Kubernetes Plugin** - Kubernetes deployment desteği
+- **SonarQube Scanner Plugin** - Kod kalitesi analizi
+- **Trivy Plugin** - Güvenlik taraması
+- **Blue Ocean** - Modern pipeline görselleştirme
+- **Pipeline Stage View Plugin** - Stage detaylı görüntüleme
+- **Build Timeout Plugin** - Build timeout kontrolü
+- **Credentials Plugin** - Güvenli credential yönetimi
+
 #### 🔨 Jenkins Agent (t4g.large)
 - **Java 21 + Maven** kurulumu
 - **Docker** engine ve Docker Hub auth
@@ -568,38 +581,6 @@ spec:
         type: Utilization
         averageUtilization: 70
 ```
-
-## 🛠️ Sorun Giderme
-
-### 🔧 Jenkins Sorunları
-- Build failure diagnostics ve log analysis
-- Agent connection troubleshooting ve SSH validation
-- Service restart procedures ve status verification
-
-### ⚙️ Kubernetes Sorunları
-- Pod crash diagnostics ve restart procedures
-- Service connection troubleshooting ve endpoint validation
-- Image pull issues ve Docker Hub connectivity
-
-### 🐳 Docker Sorunları
-- Build failure diagnostics ve daemon status checks
-- Docker Hub push issues ve authentication troubleshooting
-- Disk space management ve cleanup procedures
-
-### 🔍 SonarQube Sorunları
-- Service startup issues ve log analysis
-- Quality gate failure troubleshooting ve project status checks
-- PostgreSQL connectivity ve database validation
-
-### 🔄 ArgoCD Sorunları
-- Sync failure diagnostics ve manual sync procedures
-- Connection issues ve service restart procedures
-- Application status validation ve troubleshooting
-
-### ☁️ EKS Sorunları
-- Cluster status monitoring ve recreation procedures
-- AWS CLI configuration ve credentials management
-- Node status validation ve cluster health checks
 
 ## 📚 Kaynaklar
 
