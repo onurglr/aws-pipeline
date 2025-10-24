@@ -23,74 +23,62 @@ Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının 
 
 ## 🏗️ Sistem Mimarisi
 
-### **🎯 Genel DevOps & GitOps Sistemi**
-
-Bu sistem, modern DevOps ve GitOps prensiplerini kullanarak tam otomatik CI/CD sürecini gerçekleştirir. Geliştiriciden production'a kadar olan tüm süreç otomatikleştirilmiştir.
-
+### **DevOps Pipeline Akış Diyagramı**
 ```mermaid
 graph TB
-    subgraph "Development & Version Control"
-        Dev[👨‍💻 Developer<br/>Local PC]
-        Java[☕ Java & Spring<br/>Apache Maven<br/>Git]
-        GH[📁 GitHub Repository<br/>Cloud PC]
-        
-        Dev -->|Commit Code| Java
-        Java -->|Push Code| GH
+    subgraph "Development Phase"
+        Dev[👨‍💻 Developer]
+        GH[📁 GitHub Repository]
+        Dev -->|Code Push| GH
     end
     
-    subgraph "Continuous Integration"
-        JM[🚀 Jenkins Master<br/>Cloud PC AWS]
-        SQ[🔍 SonarQube<br/>Cloud PC AWS]
-        PG[🐘 PostgreSQL]
+    subgraph "CI/CD Phase"
+        J[🚀 Jenkins Pipeline]
+        SQ[🔍 SonarQube]
+        D[🐳 Docker Build]
+        T[🔒 Trivy Scanner]
+        DH[📦 Docker Hub]
         
-        GH -->|Pull Code| JM
-        JM -->|Clean Test Install| JM
-        JM -->|Code Pull Analysis| SQ
-        SQ -->|Code Analysis Report| JM
-        SQ -->|Data Storage| PG
+        GH -->|Webhook| J
+        J --> SQ
+        J --> D
+        D --> T
+        D --> DH
+        SQ -->|Quality Gate| J
+        T -->|Security Check| J
     end
     
-    subgraph "Containerization & Security"
-        D[🐳 Docker<br/>Cloud PC AWS]
-        T[🔒 Aqua Trivy<br/>Agent Node]
-        DH[📦 DockerHub]
-        
-        JM -->|Build Image| D
-        D -->|Scan Docker Image| T
-        T -->|Security Report| JM
-        D -->|DockerHub Push| DH
-    end
-    
-    subgraph "Continuous Deployment & GitOps"
-        K8S[⚙️ Kubernetes EKS<br/>Cloud PC AWS]
+    subgraph "Deployment Phase"
         A[🔄 ArgoCD]
-        H[📦 Helm]
+        K[⚙️ Kubernetes Cluster]
+        App[🏃 Application Pods]
         
-        JM -->|Deploy Command| K8S
-        DH -->|DockerHub Image Pull| K8S
-        A -->|GitOps| K8S
-        A -->|Helm Charts| H
-        H -->|Deploy| K8S
+        J -->|Trigger CD Pipeline| A
+        DH -->|Image Pull| K
+        A -->|GitOps Sync| K
+        K --> App
     end
     
-    subgraph "Notification"
-        Gmail[📧 Gmail]
-        A -->|Send Notification| Gmail
+    subgraph "Monitoring Phase"
+        P[📊 Prometheus]
+        G[📈 Grafana]
+        J -->|Metrics| P
+        K -->|Metrics| P
+        P -->|Data Source| G
     end
     
     style Dev fill:#e1f5fe
-    style Java fill:#fff3e0
     style GH fill:#f3e5f5
-    style JM fill:#fff3e0
+    style J fill:#fff3e0
     style SQ fill:#e8f5e8
-    style PG fill:#f3e5f5
-    style D fill:#e3f2fd
     style T fill:#ffebee
+    style D fill:#e3f2fd
     style DH fill:#f1f8e9
-    style K8S fill:#fce4ec
     style A fill:#e0f2f1
-    style H fill:#e8eaf6
-    style Gmail fill:#ffebee
+    style K fill:#fce4ec
+    style App fill:#fff8e1
+    style P fill:#ffebee
+    style G fill:#f3e5f5
 ```
 
 ## 📋 DevOps Pipeline Bölümleri
@@ -219,9 +207,9 @@ Container'ları production ortamına otomatik olarak deploy etmek ve GitOps ile 
 #### **📊 CD & GitOps Workflow**
 ```mermaid
 graph TB
-    JM[🚀 Jenkins] -->|Deploy Command| K8S[⚙️ Kubernetes EKS]
-    DH[📦 DockerHub] -->|Image Pull| K8S
-    A[🔄 ArgoCD] -->|GitOps Sync| K8S
+    JM[🚀 Jenkins] -->|Trigger CD Pipeline| A[🔄 ArgoCD]
+    DH[📦 DockerHub] -->|Image Pull| K8S[⚙️ Kubernetes EKS]
+    A -->|GitOps Sync| K8S
     A -->|Helm Charts| H[📦 Helm]
     H -->|Deploy| K8S
     K8S -->|Pod Management| APP[🏃 Application Pods]
@@ -238,9 +226,9 @@ graph TB
 ```
 
 #### **🔄 Süreç Akışı**
-1. **Jenkins** Kubernetes'e deploy komutu gönderir
-2. **Kubernetes** DockerHub'dan image'ı çeker
-3. **ArgoCD** GitOps repository'yi izler
+1. **Jenkins** ArgoCD'yi tetikler (Trigger CD Pipeline)
+2. **ArgoCD** GitOps repository'yi izler
+3. **Kubernetes** DockerHub'dan image'ı çeker
 4. **Helm** ile Kubernetes'e deploy edilir
 5. **Application Pods** çalışmaya başlar
 
