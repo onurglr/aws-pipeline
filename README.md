@@ -19,63 +19,254 @@ Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının 
 
 ## 🏗️ Sistem Mimarisi
 
-### **DevOps Pipeline Akış Diyagramı**
+### **🎯 Genel DevOps & GitOps Sistemi**
+
+Bu sistem, modern DevOps ve GitOps prensiplerini kullanarak tam otomatik CI/CD sürecini gerçekleştirir. Geliştiriciden production'a kadar olan tüm süreç otomatikleştirilmiştir.
+
 ```mermaid
 graph TB
-    subgraph "Development Phase"
-        Dev[👨‍💻 Developer]
-        GH[📁 GitHub Repository]
-        Dev -->|Code Push| GH
-    end
-    
-    subgraph "CI/CD Phase"
-        J[🚀 Jenkins Pipeline]
-        SQ[🔍 SonarQube]
-        D[🐳 Docker Build]
-        T[🔒 Trivy Scanner]
-        DH[📦 Docker Hub]
+    subgraph "Development & Version Control"
+        Dev[👨‍💻 Developer<br/>Local PC]
+        Java[☕ Java & Spring<br/>Apache Maven<br/>Git]
+        GH[📁 GitHub Repository<br/>Cloud PC]
         
-        GH -->|Webhook| J
-        J --> SQ
-        J --> D
-        D --> T
-        D --> DH
-        SQ -->|Quality Gate| J
-        T -->|Security Check| J
+        Dev -->|Commit Code| Java
+        Java -->|Push Code| GH
     end
     
-    subgraph "Deployment Phase"
+    subgraph "Continuous Integration"
+        JM[🚀 Jenkins Master<br/>Cloud PC AWS]
+        SQ[🔍 SonarQube<br/>Cloud PC AWS]
+        PG[🐘 PostgreSQL]
+        
+        GH -->|Pull Code| JM
+        JM -->|Clean Test Install| JM
+        JM -->|Code Pull Analysis| SQ
+        SQ -->|Code Analysis Report| JM
+        SQ -->|Data Storage| PG
+    end
+    
+    subgraph "Containerization & Security"
+        D[🐳 Docker<br/>Cloud PC AWS]
+        T[🔒 Aqua Trivy<br/>Agent Node]
+        DH[📦 DockerHub]
+        
+        JM -->|Build Image| D
+        D -->|Scan Docker Image| T
+        T -->|Security Report| JM
+        D -->|DockerHub Push| DH
+    end
+    
+    subgraph "Continuous Deployment & GitOps"
+        K8S[⚙️ Kubernetes EKS<br/>Cloud PC AWS]
         A[🔄 ArgoCD]
-        K[⚙️ Kubernetes Cluster]
-        App[🏃 Application Pods]
+        H[📦 Helm]
         
-        J -->|Deploy Command| A
-        DH -->|Image Pull| K
-        A -->|GitOps Sync| K
-        K --> App
+        JM -->|Deploy Command| K8S
+        DH -->|DockerHub Image Pull| K8S
+        A -->|GitOps| K8S
+        A -->|Helm Charts| H
+        H -->|Deploy| K8S
     end
     
-    subgraph "Monitoring Phase"
-        P[📊 Prometheus]
-        G[📈 Grafana]
-        J -->|Metrics| P
-        K -->|Metrics| P
-        P -->|Data Source| G
+    subgraph "Notification"
+        Gmail[📧 Gmail]
+        A -->|Send Notification| Gmail
     end
     
     style Dev fill:#e1f5fe
+    style Java fill:#fff3e0
     style GH fill:#f3e5f5
-    style J fill:#fff3e0
+    style JM fill:#fff3e0
     style SQ fill:#e8f5e8
-    style T fill:#ffebee
+    style PG fill:#f3e5f5
     style D fill:#e3f2fd
+    style T fill:#ffebee
+    style DH fill:#f1f8e9
+    style K8S fill:#fce4ec
+    style A fill:#e0f2f1
+    style H fill:#e8eaf6
+    style Gmail fill:#ffebee
+```
+
+## 📋 DevOps Pipeline Bölümleri
+
+### 1️⃣ Development & Version Control
+
+#### **🎯 Bölüm Amacı**
+Geliştiricinin yerel ortamında kod yazması ve merkezi repository'ye güvenli şekilde göndermesi.
+
+#### **🔧 Kullanılan Araçlar**
+- **Java 21 & Spring Boot**: Ana uygulama geliştirme
+- **Apache Maven**: Build ve dependency management
+- **Git**: Local version control
+- **GitHub**: Central repository
+
+#### **📊 Development Workflow**
+```mermaid
+graph LR
+    Dev[👨‍💻 Developer<br/>Local PC] --> Code[💻 Write Code<br/>Java & Spring]
+    Code --> Build[🔨 Maven Build<br/>Clean & Compile]
+    Build --> Test[🧪 Unit Tests<br/>Local Testing]
+    Test --> Commit[📝 Git Commit<br/>Local Repository]
+    Commit --> Push[📤 Git Push<br/>GitHub Repository]
+    
+    style Dev fill:#e1f5fe
+    style Code fill:#fff3e0
+    style Build fill:#e3f2fd
+    style Test fill:#e8f5e8
+    style Commit fill:#f3e5f5
+    style Push fill:#f1f8e9
+```
+
+#### **🔄 Süreç Akışı**
+1. **Developer** yerel PC'de Java & Spring ile kod yazar
+2. **Maven** ile projeyi build eder ve test eder
+3. **Git** ile değişiklikleri local repository'ye commit eder
+4. **GitHub**'a push yaparak merkezi repository'yi günceller
+
+---
+
+### 2️⃣ Continuous Integration
+
+#### **🎯 Bölüm Amacı**
+GitHub'dan gelen kod değişikliklerini otomatik olarak test etmek, build etmek ve kalite kontrolü yapmak.
+
+#### **🔧 Kullanılan Araçlar**
+- **Jenkins Master**: CI/CD orkestratörü
+- **SonarQube**: Kod kalitesi ve güvenlik analizi
+- **PostgreSQL**: SonarQube veri depolama
+
+#### **📊 CI Workflow**
+```mermaid
+graph TB
+    GH[📁 GitHub Repository] -->|Webhook Trigger| JM[🚀 Jenkins Master]
+    JM -->|Pull Code| Code[📥 Code Checkout]
+    Code -->|Maven Build| Build[🔨 Clean Test Install]
+    Build -->|Quality Check| SQ[🔍 SonarQube Analysis]
+    SQ -->|Analysis Report| QG[🚪 Quality Gate]
+    QG -->|Pass/Fail| JM
+    
+    SQ -->|Store Data| PG[🐘 PostgreSQL]
+    
+    style GH fill:#f3e5f5
+    style JM fill:#fff3e0
+    style Code fill:#e1f5fe
+    style Build fill:#e3f2fd
+    style SQ fill:#e8f5e8
+    style QG fill:#ffebee
+    style PG fill:#f3e5f5
+```
+
+#### **🔄 Süreç Akışı**
+1. **GitHub** webhook ile Jenkins'i tetikler
+2. **Jenkins** kodu çeker ve Maven ile build eder
+3. **SonarQube** kod kalitesi analizi yapar
+4. **Quality Gate** sonucuna göre pipeline devam eder/durur
+
+---
+
+### 3️⃣ Containerization & Security
+
+#### **🎯 Bölüm Amacı**
+Başarılı build'i container'a dönüştürmek ve güvenlik taraması yapmak.
+
+#### **🔧 Kullanılan Araçlar**
+- **Docker**: Containerization engine
+- **Aqua Trivy**: Security scanning
+- **DockerHub**: Container registry
+
+#### **📊 Container & Security Workflow**
+```mermaid
+graph TB
+    JM[🚀 Jenkins] -->|Build Success| D[🐳 Docker Build]
+    D -->|Create Image| IMG[📦 Docker Image]
+    IMG -->|Security Scan| T[🔒 Trivy Scanner]
+    T -->|Vulnerability Check| SEC[🛡️ Security Report]
+    SEC -->|Pass/Fail| JM
+    IMG -->|Push Image| DH[📦 DockerHub Registry]
+    
+    style JM fill:#fff3e0
+    style D fill:#e3f2fd
+    style IMG fill:#f1f8e9
+    style T fill:#ffebee
+    style SEC fill:#ffcdd2
+    style DH fill:#e8eaf6
+```
+
+#### **🔄 Süreç Akışı**
+1. **Jenkins** başarılı build'i Docker'a gönderir
+2. **Docker** uygulamayı container image'ına dönüştürür
+3. **Trivy** image'ı güvenlik açıkları için tarar
+4. **DockerHub**'a güvenli image push edilir
+
+---
+
+### 4️⃣ Continuous Deployment & GitOps
+
+#### **🎯 Bölüm Amacı**
+Container'ları production ortamına otomatik olarak deploy etmek ve GitOps ile yönetmek.
+
+#### **🔧 Kullanılan Araçlar**
+- **Kubernetes EKS**: Container orchestration
+- **ArgoCD**: GitOps continuous deployment
+- **Helm**: Kubernetes package management
+
+#### **📊 CD & GitOps Workflow**
+```mermaid
+graph TB
+    JM[🚀 Jenkins] -->|Deploy Command| K8S[⚙️ Kubernetes EKS]
+    DH[📦 DockerHub] -->|Image Pull| K8S
+    A[🔄 ArgoCD] -->|GitOps Sync| K8S
+    A -->|Helm Charts| H[📦 Helm]
+    H -->|Deploy| K8S
+    K8S -->|Pod Management| APP[🏃 Application Pods]
+    
+    GH[📁 GitHub GitOps] -->|Manifest Changes| A
+    
+    style JM fill:#fff3e0
+    style K8S fill:#fce4ec
     style DH fill:#f1f8e9
     style A fill:#e0f2f1
-    style K fill:#fce4ec
-    style App fill:#fff8e1
-    style P fill:#ffebee
-    style G fill:#f3e5f5
+    style H fill:#e8eaf6
+    style APP fill:#fff8e1
+    style GH fill:#f3e5f5
 ```
+
+#### **🔄 Süreç Akışı**
+1. **Jenkins** Kubernetes'e deploy komutu gönderir
+2. **Kubernetes** DockerHub'dan image'ı çeker
+3. **ArgoCD** GitOps repository'yi izler
+4. **Helm** ile Kubernetes'e deploy edilir
+5. **Application Pods** çalışmaya başlar
+
+---
+
+### 5️⃣ Notification
+
+#### **🎯 Bölüm Amacı**
+Sistem durumu ve deployment sonuçları hakkında bildirim göndermek.
+
+#### **🔧 Kullanılan Araçlar**
+- **Gmail**: Email notification system
+
+#### **📊 Notification Workflow**
+```mermaid
+graph LR
+    A[🔄 ArgoCD] -->|Deployment Status| N[📧 Notification System]
+    N -->|Send Email| Gmail[📧 Gmail]
+    Gmail -->|Notify| Team[👥 Development Team]
+    
+    style A fill:#e0f2f1
+    style N fill:#fff3e0
+    style Gmail fill:#ffebee
+    style Team fill:#e1f5fe
+```
+
+#### **🔄 Süreç Akışı**
+1. **ArgoCD** deployment durumunu izler
+2. **Notification System** email hazırlar
+3. **Gmail** ile team'e bildirim gönderir
 
 ## 🛠️ DevOps Araçları ve İhtiyaçları
 
