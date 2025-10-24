@@ -322,122 +322,75 @@ aws-pipeline/
 
 ## 🏗️ Altyapı Kurulumu
 
-### AWS Örnek Türleri (t4g.xlarge referans alınarak)
+### 🖥️ Makine Mimarisi
 
-| Makine | Örnek Türü | vCPU | RAM | Depolama | Açıklama |
-|--------|---------------|------|-----|---------|----------|
-| Jenkins Ana | t4g.xlarge | 4 | 16GB | 15GB | Ana CI/CD sunucusu |
-| Jenkins Ajan | t4g.large | 2 | 8GB | 15GB | Derleme işlemleri için |
+| Makine | Örnek Türü | vCPU | RAM | Depolama | Görev |
+|--------|-------------|------|-----|----------|-------|
+| Jenkins Master | t4g.xlarge | 4 | 16GB | 15GB | Ana CI/CD orkestratörü |
+| Jenkins Agent | t4g.large | 2 | 8GB | 15GB | Build işlemleri |
 | SonarQube | t4g.medium | 2 | 4GB | 15GB | Kod kalitesi analizi |
 | EKS Bootstrap | t4g.small | 2 | 2GB | 15GB | Küme yönetimi |
-| EKS Düğümleri | t4g.medium | 2 | 4GB | 15GB | Uygulama iş yükleri |
 
-### Makine 1: Jenkins Master Server
+### 🔗 Makine İletişim Diyagramı
 
-#### AWS EC2 Instance (t4g.xlarge)
-1. **Instance Type**: `t4g.xlarge` (4 vCPU, 16GB RAM, ARM64)
-2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 15GB GP3 EBS
-4. **Network**: VPC with internet gateway
+```mermaid
+graph TB
+    subgraph "AWS Infrastructure"
+        JM[Jenkins Master<br/>t4g.xlarge<br/>🚀 CI/CD Orkestratörü]
+        JA[Jenkins Agent<br/>t4g.large<br/>🔨 Build İşlemleri]
+        SQ[SonarQube<br/>t4g.medium<br/>🔍 Kod Kalitesi]
+        EKS[EKS Bootstrap<br/>t4g.small<br/>⚙️ Küme Yönetimi]
+        K8S[Kubernetes Cluster<br/>EKS Nodes<br/>🏃 Uygulama Çalıştırma]
+    end
+    
+    subgraph "External Services"
+        GH[GitHub Repository]
+        DH[Docker Hub]
+        PG[PostgreSQL]
+    end
+    
+    %% İletişim akışları
+    GH -->|Webhook| JM
+    JM -->|Build Jobs| JA
+    JM -->|Quality Check| SQ
+    JM -->|Deploy Command| K8S
+    JA -->|Docker Images| DH
+    DH -->|Image Pull| K8S
+    SQ -->|Data Storage| PG
+    EKS -->|Cluster Management| K8S
+    
+    style JM fill:#fff3e0
+    style JA fill:#e3f2fd
+    style SQ fill:#e8f5e8
+    style EKS fill:#fce4ec
+    style K8S fill:#e0f2f1
+    style GH fill:#f3e5f5
+    style DH fill:#f1f8e9
+    style PG fill:#f3e5f5
+```
 
-### 🛠️ Kurulum Adımları
+### 📋 Kurulum Özeti
 
-#### ☕ Java 21 & Maven
-- Sistem güncellemesi ve Java 21 JDK kurulumu
-- Maven build tool kurulumu
-- Sürüm kontrolü ve doğrulama
+#### 🚀 Jenkins Master (t4g.xlarge)
+- **Java 21 + Maven** kurulumu
+- **Jenkins** servisi ve plugin'leri
+- **GitHub webhook** entegrasyonu
+- **Agent bağlantısı** kurulumu
 
-#### 🚀 Jenkins Setup
-- Jenkins repository konfigürasyonu
-- Jenkins servisi kurulumu ve başlatma
-- Admin panel erişimi ve ilk konfigürasyon
+#### 🔨 Jenkins Agent (t4g.large)
+- **Java 21 + Maven** kurulumu
+- **Docker** engine ve Docker Hub auth
+- **Maintenance scripts** (temizlik otomasyonu)
 
-### Makine 2: Jenkins Agent Server
+#### 🔍 SonarQube (t4g.medium)
+- **Java 11** kurulumu (SonarQube requirement)
+- **PostgreSQL** database kurulumu
+- **SonarQube** servisi ve konfigürasyonu
 
-#### AWS EC2 Instance (t4g.large)
-1. **Instance Type**: `t4g.large` (2 vCPU, 8GB RAM, ARM64)
-2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 15GB GP3 EBS
-4. **Network**: VPC with internet gateway
-
-### 🛠️ Kurulum Adımları
-
-#### ☕ Java & Maven
-- Java 21 JDK ve Maven kurulumu
-- Sürüm kontrolü ve doğrulama
-
-#### 🐳 Docker Setup ve Bağlantıları
-
-
-- Docker engine kurulumu ve konfigürasyonu
-- Docker Hub authentication
-- User permissions ve grup ayarları
-
-#### 🧹 Maintenance Scripts
-- Disk cleanup otomasyonu
-- Docker image ve container temizliği
-- Volume management
-
-### Makine 3: SonarQube Server
-
-#### AWS EC2 Instance (t4g.medium)
-1. **Instance Type**: `t4g.medium` (2 vCPU, 4GB RAM, ARM64)
-2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 15GB GP3 EBS
-4. **Network**: VPC with internet gateway
-
-### 🛠️ Kurulum Adımları
-
-#### ☕ Java 11 Setup
-- Java 11 JDK kurulumu (SonarQube requirement)
-- Sürüm kontrolü ve doğrulama
-
-#### 🐘 PostgreSQL Database
-- PostgreSQL server kurulumu ve konfigürasyonu
-- SonarQube database ve user oluşturma
-- Database permissions ve access ayarları
-
-#### 🔍 SonarQube Installation ve Bağlantıları
-
-
-- SonarQube binary indirme ve kurulum
-- File permissions ve ownership ayarları
-- SonarQube service başlatma ve konfigürasyon
-
-### Makine 4: AWS EKS Server
-
-#### AWS EC2 Instance (t4g.small)
-1. **Instance Type**: `t4g.small` (2 vCPU, 2GB RAM, ARM64)
-2. **AMI**: Ubuntu Server 22.04 LTS (ARM64)
-3. **Storage**: 15GB GP3 EBS
-4. **Network**: VPC with internet gateway
-
-### 🛠️ Kurulum Adımları
-
-#### 🏷️ System Configuration
-- Hostname güncelleme ve system reboot
-- System preparation ve network ayarları
-
-#### ☁️ AWS Tools Installation
-- AWS CLI kurulumu ve konfigürasyonu
-- AWS credentials setup ve validation
-
-#### ⚙️ Kubernetes Tools ve Bağlantıları
-
-
-- kubectl client kurulumu
-- eksctl cluster management tool kurulumu
-- Version kontrolü ve doğrulama
-
-#### 🚀 EKS Cluster Setup
-- AWS credentials konfigürasyonu
-- EKS cluster oluşturma (my-workspace-cluster)
-- Node group konfigürasyonu
-
-#### 🔄 ArgoCD Deployment
-- ArgoCD namespace ve deployment
-- ArgoCD CLI kurulumu
-- LoadBalancer konfigürasyonu ve admin access
+#### ⚙️ EKS Bootstrap (t4g.small)
+- **AWS CLI + kubectl + eksctl** kurulumu
+- **EKS cluster** oluşturma (my-workspace-cluster)
+- **ArgoCD** deployment ve LoadBalancer setup
 
 ## 🚀 Application Deployment
 
