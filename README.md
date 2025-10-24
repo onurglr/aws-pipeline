@@ -8,40 +8,69 @@ Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının 
 | Teknoloji | Versiyon | Açıklama |
 |-----------|----------|----------|
 | **Java** | 21 | Backend programlama dili |
-| **Spring Boot** | 3.5.5 | Web çatısı |
+| **Spring Boot** | 3.2.0 | Web çatısı |
 | **Maven** | 3.9+ | Derleme aracı |
 | **Docker** | En Son | Kapsayıcılaştırma |
-| **Kubernetes** | 1.30+ | Kapsayıcı orkestrasyonu |
+| **Kubernetes** | 1.28+ | Kapsayıcı orkestrasyonu |
 | **Jenkins** | 2.400+ | CI/CD otomasyonu |
 | **SonarQube** | 9.0+ | Kod kalitesi analizi |
 | **Trivy** | En Son | Güvenlik taraması |
-| **AWS EKS** | 1.30+ | Yönetilen Kubernetes servisi |
+| **AWS EKS** | 1.28+ | Yönetilen Kubernetes servisi |
 
 ## 🏗️ Sistem Mimarisi
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Geliştirici   │    │     GitHub      │    │    Jenkins      │
-│                 │    │   Depo          │    │     Sunucu      │
-│  Kod Gönderimi  │───▶│                 │───▶│                 │
-│                 │    │  Webhook Tetikleme│   │  Süreç Başlatma │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                       │
-                                                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Docker Hub    │    │   SonarQube     │    │     Trivy       │
-│                 │    │                 │    │                 │
-│  Görüntü Depolama│◀───│  Kod Kalitesi   │◀───│ Güvenlik Tarama │
-│                 │    │   Analizi       │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │
-         ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   AWS EKS       │    │   Kubernetes    │    │   Uygulama      │
-│                 │    │                 │    │                 │
-│  Küme           │───▶│   Dağıtım       │───▶│   Üretim        │
-│  Yönetimi       │    │   & Servis      │    │   Ortamı        │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+### **DevOps Pipeline Akış Diyagramı**
+```mermaid
+graph TB
+    subgraph "Development Phase"
+        Dev[👨‍💻 Developer]
+        GH[📁 GitHub Repository]
+        Dev -->|Code Push| GH
+    end
+    
+    subgraph "CI/CD Phase"
+        J[🚀 Jenkins Pipeline]
+        SQ[🔍 SonarQube]
+        T[🔒 Trivy Scanner]
+        D[🐳 Docker Build]
+        DH[📦 Docker Hub]
+        
+        GH -->|Webhook| J
+        J --> SQ
+        J --> T
+        J --> D
+        D --> DH
+        SQ -->|Quality Gate| J
+        T -->|Security Check| J
+    end
+    
+    subgraph "Deployment Phase"
+        A[🔄 ArgoCD]
+        K[⚙️ Kubernetes Cluster]
+        App[🏃 Application Pods]
+        
+        J -->|Deploy Command| A
+        DH -->|Image Pull| K
+        A -->|GitOps Sync| K
+        K --> App
+    end
+    
+    subgraph "Monitoring Phase"
+        S[💬 Slack]
+        J -->|Notification| S
+    end
+    
+    style Dev fill:#e1f5fe
+    style GH fill:#f3e5f5
+    style J fill:#fff3e0
+    style SQ fill:#e8f5e8
+    style T fill:#ffebee
+    style D fill:#e3f2fd
+    style DH fill:#f1f8e9
+    style A fill:#e0f2f1
+    style K fill:#fce4ec
+    style App fill:#fff8e1
+    style S fill:#e8eaf6
 ```
 
 ## 🛠️ DevOps Araçları ve İhtiyaçları
@@ -297,31 +326,6 @@ Jenkins → Kubernetes Deploy → Pod Management → ArgoCD Sync
 Jenkins → SonarQube Analysis → Quality Gate → Build Continue/Stop
 ```
 
-#### **🔒 Trivy - Güvenlik Tarayıcısı**
-**Ana Rolü:**
-- **Vulnerability Scanner**: Container image'larındaki güvenlik açıklarını tespit eder
-- **Compliance Checker**: Güvenlik standartlarına uygunluk kontrolü yapar
-- **CVE Tracker**: Bilinen güvenlik açıklarını takip eder
-- **Security Gate**: Güvenli olmayan image'ların production'a geçmesini engeller
-
-**Çalışma Yönü:**
-```
-Jenkins → Trivy Scan → Security Report → Build Continue/Stop
-```
-
-#### **🔄 ArgoCD - GitOps Yöneticisi**
-**Ana Rolü:**
-- **Git Watcher**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository değişikliklerini izler
-- **State Manager**: Kubernetes cluster'da desired state'i sağlar
-- **Sync Controller**: Otomatik senkronizasyon yapar
-- **Rollback Manager**: Hızlı geri alma işlemleri sağlar
-- **Multi-Environment**: Farklı ortamları yönetir
-
-**Çalışma Yönü:**
-```
-aws-pipeline-gitops ←→ ArgoCD ←→ Kubernetes Cluster
-```
-
 ### 🔄 Araçlar Arası Çalışma Yönleri
 
 #### **Jenkins ↔ ArgoCD Entegrasyonu**
@@ -406,14 +410,12 @@ graph TB
     T -->|Security Scan| J
     D -->|Image Push| DH[📦 Docker Hub]
     
-    J -->|Deploy Command| K[⚙️ Kubernetes]
-    DH -->|Image Pull| K
-    K -->|Pod Management| P[🏃 Pods]
+    J -->|Deploy Command| A[🔄 ArgoCD]
+    DH -->|Image Pull| K[⚙️ Kubernetes]
+    A -->|GitOps Sync| K
     
-    GH -->|Git Changes| A[🔄 ArgoCD]
-    A -->|Sync| K
-    K -->|Status| A
-    A -->|Notification| J
+    K -->|Pod Management| P[🏃 Application Pods]
+    J -->|Notification| S[💬 Slack]
     
     P -->|Health Check| K
     K -->|Scaling| P
@@ -428,6 +430,7 @@ graph TB
     style K fill:#fce4ec
     style A fill:#e0f2f1
     style P fill:#fff8e1
+    style S fill:#e8eaf6
 ```
 
 #### **Jenkins-ArgoCD Entegrasyon Detayı**
@@ -467,9 +470,11 @@ flowchart LR
     Build --> Quality[🔍 SonarQube Check]
     Quality --> Security[🔒 Trivy Scan]
     Security --> Docker[🐳 Docker Build]
-    Docker --> Deploy[⚙️ K8s Deploy]
-    Deploy --> Monitor[📊 ArgoCD Sync]
-    Monitor --> End([✅ Pipeline Complete])
+    Docker --> Registry[📦 Docker Hub Push]
+    Registry --> Deploy[⚙️ K8s Deploy]
+    Deploy --> GitOps[🔄 ArgoCD Sync]
+    GitOps --> Notify[💬 Slack Notification]
+    Notify --> End([✅ Pipeline Complete])
     
     Quality -->|Fail| Stop([❌ Pipeline Stop])
     Security -->|Fail| Stop
@@ -482,8 +487,10 @@ flowchart LR
     style Quality fill:#e8f5e8
     style Security fill:#ffebee
     style Docker fill:#e3f2fd
+    style Registry fill:#f1f8e9
     style Deploy fill:#fce4ec
-    style Monitor fill:#e0f2f1
+    style GitOps fill:#e0f2f1
+    style Notify fill:#e8eaf6
 ```
 
 ### 🔍 Detaylı Süreç Diyagramları

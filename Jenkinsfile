@@ -4,7 +4,6 @@ pipeline {
             label 'My-Jenkins-Agent'
         }
     }
-    //agent any
     tools {
         maven 'Maven3'
         jdk 'Java21'
@@ -39,7 +38,6 @@ pipeline {
                 }
             }
         }
-    
 
         stage('Build Maven') {
             steps {
@@ -52,8 +50,6 @@ pipeline {
                 }
             }
         }
-
-
 
         stage("SonarQube Analysis") {
             steps {
@@ -76,8 +72,6 @@ pipeline {
                 }
             }
         }
-  
-
 
         stage('Build & Push Docker Image to DockerHub') {
             steps {
@@ -91,21 +85,17 @@ pipeline {
             }
         }
 
-
-
         stage("Trivy Scan") {
             steps {
                 script {
                     if (isUnix()) {
-                        sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image onurguler18/aws-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
+                        sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${IMAGE_NAME}:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
                     } else {
-                        bat ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image onurguler18/aws-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
+                        bat ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${IMAGE_NAME}:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
                     }
                 }
             }
         }
-
-
 
         stage('Cleanup Old Docker Images') {
             steps {
@@ -142,20 +132,23 @@ pipeline {
          }
 
 
-         stage('Docker Image to Clean') {
-             steps {
-
-                    //  sh 'docker image prune -f'
-                      bat 'docker image prune -f'
-
-             }
-         }
+        stage('Docker Image Cleanup') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'docker image prune -f'
+                    } else {
+                        bat 'docker image prune -f'
+                    }
+                }
+            }
+        }
 
 
         stage("Trigger CD Pipeline") {
             steps {
                 script {
-                    sh "curl -v -k --user admin:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2.amazonaws.com:8080/job/aws-pipeline-gitops-v2/buildWithParameters?token=GITOPS_TRIGGER_START'"
+                    sh "curl -v -k --user admin:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'http://ec2-35-169-94-227.compute-1.amazonaws.com:8080/job/aws-pipeline-gitops-v2/buildWithParameters?token=GITOPS_TRIGGER_START'"
                 }
             }
         }
