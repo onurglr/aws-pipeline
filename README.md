@@ -15,6 +15,10 @@ Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının 
 | **Jenkins** | 2.400+ | CI/CD otomasyonu |
 | **SonarQube** | 9.0+ | Kod kalitesi analizi |
 | **Trivy** | En Son | Güvenlik taraması |
+| **ArgoCD** | 2.12+ | GitOps sürekli dağıtım |
+| **Helm** | 3.12+ | Kubernetes paket yöneticisi |
+| **Prometheus** | 2.45+ | Metrik toplama ve izleme |
+| **Grafana** | 10.2+ | Görselleştirme ve dashboard |
 | **AWS EKS** | 1.28+ | Yönetilen Kubernetes servisi |
 
 ## 🏗️ Sistem Mimarisi
