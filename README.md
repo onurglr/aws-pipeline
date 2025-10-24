@@ -31,14 +31,14 @@ graph TB
     subgraph "CI/CD Phase"
         J[🚀 Jenkins Pipeline]
         SQ[🔍 SonarQube]
-        T[🔒 Trivy Scanner]
         D[🐳 Docker Build]
+        T[🔒 Trivy Scanner]
         DH[📦 Docker Hub]
         
         GH -->|Webhook| J
         J --> SQ
-        J --> T
         J --> D
+        D --> T
         D --> DH
         SQ -->|Quality Gate| J
         T -->|Security Check| J
@@ -56,8 +56,11 @@ graph TB
     end
     
     subgraph "Monitoring Phase"
-        S[💬 Slack]
-        J -->|Notification| S
+        P[📊 Prometheus]
+        G[📈 Grafana]
+        J -->|Metrics| P
+        K -->|Metrics| P
+        P -->|Data Source| G
     end
     
     style Dev fill:#e1f5fe
@@ -70,7 +73,8 @@ graph TB
     style A fill:#e0f2f1
     style K fill:#fce4ec
     style App fill:#fff8e1
-    style S fill:#e8eaf6
+    style P fill:#ffebee
+    style G fill:#f3e5f5
 ```
 
 ## 🛠️ DevOps Araçları ve İhtiyaçları
