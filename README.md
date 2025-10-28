@@ -408,11 +408,11 @@ graph TB
 
 ## ⚙️ DevOps Konfigürasyon Detayları
 
-### 🔧 Jenkins Pipeline Konfigürasyonu
+### 🔧 Jenkins Konfigürasyonu
 - **Pipeline Script**: Declarative pipeline syntax ile CI/CD otomasyonu
 - **Build Triggers**: GitHub webhook ve SCM polling konfigürasyonu
 - **Environment Variables**: Build environment ve credential yönetimi
-- **Parallel Execution**: Multi-stage pipeline ile paralel build execution
+- **Plugin Installation**: Docker, Kubernetes, SonarQube, Trivy, Git, Maven plugin'leri
 
 ### 🐳 Docker Konfigürasyonu
 - **Multi-stage Build**: Production-ready image oluşturma
@@ -437,66 +437,13 @@ graph TB
 - **Sync Policies**: Otomatik sync ve manual approval workflows
 - **Application Monitoring**: Deployment status ve health monitoring
 - **Rollback Capabilities**: Hızlı rollback ve version management
+- **GitOps Repository**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository'sini ArgoCD'ye bağlama
 
 ### 📊 Monitoring Konfigürasyonu
 - **Metrics Collection**: Application ve infrastructure metrics
 - **Log Aggregation**: Centralized logging ve log analysis
 - **Alerting Rules**: Threshold-based alerting ve notification
 - **Dashboard Configuration**: Real-time monitoring ve visualization
-
-## 🔧 Jenkins Konfigürasyonu ve Bağlantıları
-
-### 🔧 Jenkins Konfigürasyonu
-
-#### 🚀 İlk Kurulum ve Bağlantıları
-
-
-- Admin password retrieval ve web interface access
-- Plugin installation (Docker, Kubernetes, SonarQube, Trivy, Git, Maven)
-- Admin user creation ve security configuration
-- Jenkins service restart ve validation
-
-#### 🔐 Kimlik Bilgileri Yönetimi
-- DockerHub authentication (Personal Access Token)
-- SonarQube token generation ve configuration
-- Kubernetes kubeconfig file upload
-- Jenkins API token creation
-- GitHub personal access token setup
-
-#### 🤖 Ajan Bağlantısı
-- SSH key generation ve Master-Agent authentication
-- Node configuration (4 executors for t4g.xlarge optimization)
-- Agent connection testing ve status validation
-
-#### ⚙️ Global Araçlar Kurulumu
-- Maven 3.9.0 automatic installation configuration
-- Java 21 JDK automatic installation setup
-- Tool validation ve version verification
-
-#### 📋 Pipeline İş Oluşturma
-- New pipeline job creation (aws-pipeline)
-- SCM configuration (Git repository integration)
-- Build triggers setup (GitHub webhook ve SCM polling)
-
-#### 🔍 SonarQube Konfigürasyonu
-- Project creation (aws-pipeline project setup)
-- Quality Gate configuration (Coverage >80%, Security Rating A)
-- Project validation ve integration testing
-
-#### 🔄 ArgoCD Kurulumu ve Bağlantıları
-
-
-- ArgoCD web interface access ve authentication
-- Application creation (devops-application)
-- Automatic sync policy configuration
-- Repository ve cluster integration
-- **GitOps Repository Setup**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository'sini ArgoCD'ye bağlama
-
-#### ✅ Pipeline Doğrulama
-- Initial build testing ve console output monitoring
-- Integration validation (Docker Hub, SonarQube, Kubernetes, ArgoCD)
-- Dashboard monitoring ve status verification
-
 
 ## 📊 İzleme ve Günlük Tutma
 
