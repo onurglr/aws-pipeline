@@ -173,24 +173,32 @@ Başarılı build'i container'a dönüştürmek ve güvenlik taraması yapmak.
 graph TB
     JM[🚀 Jenkins] -->|Build Success| D[🐳 Docker Build]
     D -->|Create Image| IMG[📦 Docker Image]
-    IMG -->|Security Scan| T[🔒 Trivy Scanner]
-    T -->|Vulnerability Check| SEC[🛡️ Security Report]
-    SEC -->|Pass/Fail| JM
-    IMG -->|Push Image| DH[📦 DockerHub Registry]
-    
+    IMG -->|Trigger Scan| T[🔒 Trivy Scanner]
+    T -->|Scan Results| SEC[🛡️ Security Report]
+    SEC -->|Pass/Fail| DEC{✅ Güvenli mi?}
+    DEC -->|Evet| PUSH[📤 Jenkins Push Stage]
+    DEC -->|Hayır| FAIL[⛔ Pipeline Stop]
+    PUSH -->|Push Image| DH[📦 DockerHub Registry]
+    PUSH -->|Status Update| JM
+    FAIL -->|Stop Pipeline| JM
+
     style JM fill:#fff3e0
     style D fill:#e3f2fd
     style IMG fill:#f1f8e9
     style T fill:#ffebee
     style SEC fill:#ffcdd2
-    style DH fill:#e8eaf6
+    style DEC fill:#ffe0b2
+    style PUSH fill:#e8eaf6
+    style FAIL fill:#ffccbc
+    style DH fill:#e0f2f1
 ```
 
 #### **🔄 Süreç Akışı**
 1. **Jenkins** başarılı build'i Docker'a gönderir
 2. **Docker** uygulamayı container image'ına dönüştürür
 3. **Trivy** image'ı güvenlik açıkları için tarar
-4. **DockerHub**'a güvenli image push edilir
+4. **Security Report** sonucu Jenkins'e `Pass/Fail` olarak döner
+5. **Pass** durumunda Jenkins image'ı DockerHub'a push eder, **Fail** ise pipeline durur
 
 ---
 
