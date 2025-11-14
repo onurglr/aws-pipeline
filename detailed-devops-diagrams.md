@@ -5,48 +5,45 @@
 ```mermaid
 graph TB
     subgraph "Jenkins Pipeline Stages"
-        A[📥 Webhook Trigger] --> B[🔍 Git Checkout]
-        B --> C[🧪 Unit Tests]
-        C --> D[🔨 Maven Build]
-        D --> E[📦 Artifact Creation]
+        A[📥 GitHub Webhook] --> B[🔍 SCM Checkout]
+        B --> C[🧪 Test Maven]
+        C --> D[🔨 Build Maven]
+        D --> E[🔍 SonarQube Analysis]
+        E --> F{Quality Gate}
+        F -->|Pass| G[🐳 Docker Build & Push]
+        F -->|Fail| I[❌ Build Fail]
         
-        E --> F[🔍 SonarQube Analysis]
-        F --> G{Quality Gate}
-        G -->|Pass| H[🔒 Trivy Security Scan]
-        G -->|Fail| I[❌ Build Fail]
+        G --> H[📦 DockerHub Registry]
+        H --> J[🔒 Trivy Scan]
+        J --> K{Security Check}
+        K -->|Pass| L[🧹 Docker Cleanup]
+        K -->|Fail| I
         
-        H --> J{Security Check}
-        J -->|Pass| K[🐳 Docker Build]
-        J -->|Fail| I
-        
-        K --> L[📤 Docker Push]
-        L --> M[⚙️ Kubernetes Deploy]
-        M --> N[📊 Status Notification]
-        N --> O[✅ Pipeline Complete]
+        L --> M[🔄 Trigger ArgoCD]
+        M --> N[✅ Pipeline Complete]
     end
     
     subgraph "Jenkins Integration Points"
-        P[GitHub Webhook] --> A
-        Q[SonarQube API] --> F
-        R[Trivy Scanner] --> H
-        S[Docker Registry] --> L
-        T[Kubernetes API] --> M
-        U[ArgoCD API] --> N
+        P[GitHub Repository] --> A
+        Q[SonarQube Server] --> E
+        R[Docker Hub Registry] --> H
+        S[Trivy Scanner] --> J
+        T[ArgoCD API] --> M
     end
     
     style A fill:#fff3e0
-    style G fill:#e8f5e8
-    style J fill:#ffebee
+    style F fill:#e8f5e8
+    style K fill:#ffebee
     style I fill:#ffcdd2
-    style O fill:#c8e6c9
+    style N fill:#c8e6c9
 ```
 
 ## 🐳 Docker Detaylı Süreç Diyagramı
 
 ```mermaid
 graph TB
-    subgraph "Docker Build Process"
-        A[📥 Jenkins Trigger] --> B[📋 Dockerfile Analysis]
+    subgraph "Docker Build & Push Process"
+        A[📥 Jenkins Trigger<br/>Quality Gate Pass] --> B[📋 Dockerfile Analysis]
         B --> C[🏗️ Multi-stage Build]
         
         subgraph "Build Stages"
@@ -61,25 +58,23 @@ graph TB
         C2 --> C3
         C3 --> C4
         
-        C4 --> D[🏷️ Image Tagging]
-        D --> E[🔒 Security Scan]
-        E --> F{Security Pass}
-        F -->|Pass| G[📤 Registry Push]
-        F -->|Fail| H[❌ Build Stop]
-        
-        G --> I[📊 Build Notification]
+        C4 --> D[🏷️ Image Tagging<br/>1.0.BUILD_NUMBER<br/>latest]
+        D --> E[📤 DockerHub Push]
+        E --> F[📦 Image in Registry]
+        F --> G[🔒 Trivy Scan<br/>Security Check]
     end
     
     subgraph "Docker Integration"
-        J[Jenkins Pipeline] --> A
-        K[Trivy Scanner] --> E
-        L[Docker Hub] --> G
-        M[Kubernetes Pull] --> G
+        H[Jenkins Pipeline] --> A
+        I[Docker Hub Registry] --> E
+        J[Trivy Scanner] --> G
+        K[Kubernetes Pull] --> F
     end
     
-    style F fill:#ffebee
-    style H fill:#ffcdd2
-    style I fill:#c8e6c9
+    style A fill:#fff3e0
+    style E fill:#e8f5e8
+    style G fill:#ffebee
+    style F fill:#f1f8e9
 ```
 
 ## ⚙️ Kubernetes Detaylı Süreç Diyagramı
@@ -87,8 +82,8 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Kubernetes Deployment Process"
-        A[📥 Jenkins Deploy Command] --> B[📋 YAML Validation]
-        B --> C[🏷️ Image Pull]
+        A[🔄 ArgoCD Sync] --> B[📋 Manifest Analysis<br/>deployment.yaml<br/>service.yaml]
+        B --> C[🏷️ Image Pull<br/>DockerHub]
         C --> D[🔍 Resource Check]
         D --> E[📦 Pod Creation]
         
@@ -104,30 +99,30 @@ graph TB
         E2 --> E3
         E3 --> E4
         
-        E4 --> F[🌐 Service Creation]
-        F --> G[⚖️ Load Balancer]
-        G --> H[📊 Status Update]
+        E4 --> F[🌐 Service Creation<br/>LoadBalancer]
+        F --> G[📊 Status Update]
         
         subgraph "Monitoring & Scaling"
-            I[📈 Metrics Collection]
-            J[🔄 Auto Scaling]
-            K[🔄 Rolling Update]
-            L[🔍 Health Monitoring]
+            H[📈 Metrics Collection]
+            I[🔄 Auto Scaling]
+            J[🔄 Rolling Update]
+            K[🔍 Health Monitoring]
         end
         
+        G --> H
         H --> I
-        I --> J
-        I --> K
-        I --> L
+        H --> J
+        H --> K
     end
     
     subgraph "Kubernetes Integration"
-        M[Jenkins Pipeline] --> A
-        N[Docker Registry] --> C
-        O[ArgoCD Sync] --> A
-        P[Prometheus] --> I
+        L[ArgoCD GitOps] --> A
+        M[Docker Hub] --> C
+        N[Prometheus] --> H
+        O[GitHub GitOps Repo] --> L
     end
     
+    style A fill:#e0f2f1
     style E2 fill:#e8f5e8
     style E3 fill:#e8f5e8
     style E4 fill:#c8e6c9
@@ -186,48 +181,40 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Trivy Security Scan Process"
-        A[📥 Jenkins Trigger] --> B[🏷️ Image Identification]
+        A[📥 Jenkins Trigger<br/>After Docker Push] --> B[🏷️ Image Identification<br/>onurguler18/aws-pipeline:latest]
         B --> C[📚 CVE Database Sync]
-        C --> D[🔍 Vulnerability Scan]
+        C --> D[🔍 Vulnerability Scan<br/>HIGH, CRITICAL]
         
         subgraph "Scan Types"
             D1[🐳 Container Image Scan]
             D2[📦 Package Vulnerability]
             D3[🔒 Configuration Check]
-            D4[📋 License Compliance]
         end
         
         D --> D1
         D --> D2
         D --> D3
-        D --> D4
         
-        D1 --> E[📊 Risk Assessment]
+        D1 --> E[📊 Security Report]
         D2 --> E
         D3 --> E
-        D4 --> E
         
-        E --> F{Security Check}
-        F -->|CRITICAL| G[🚨 Build Stop]
-        F -->|HIGH| H[⚠️ Warning]
-        F -->|MEDIUM/LOW| I[✅ Build Continue]
-        
-        G --> J[📋 Security Report]
-        H --> J
-        I --> J
+        E --> F[✅ Scan Complete<br/>Exit Code 0]
+        F --> G[📋 Report to Jenkins]
+        G --> H[🔄 Continue Pipeline]
     end
     
     subgraph "Trivy Integration"
-        K[Jenkins Pipeline] --> A
-        L[Docker Registry] --> B
-        M[CVE Database] --> C
-        N[Security Dashboard] --> J
+        I[Jenkins Pipeline] --> A
+        J[Docker Hub Registry] --> B
+        K[CVE Database] --> C
+        L[Jenkins Console] --> G
     end
     
-    style F fill:#ffebee
-    style G fill:#ffcdd2
-    style H fill:#fff3e0
-    style I fill:#c8e6c9
+    style A fill:#fff3e0
+    style E fill:#ffebee
+    style F fill:#c8e6c9
+    style H fill:#e8f5e8
 ```
 
 ## 🔄 ArgoCD Detaylı Süreç Diyagramı
@@ -235,44 +222,47 @@ graph TB
 ```mermaid
 graph TB
     subgraph "ArgoCD GitOps Process"
-        A[📥 GitHub Webhook] --> B[🔍 Repository Monitoring]
-        B --> C[📋 Manifest Analysis]
-        C --> D[🔄 Desired State Check]
+        A[📥 Jenkins Trigger<br/>API Token] --> B[🔄 ArgoCD Application<br/>devops-application]
+        B --> C[🔍 GitOps Repository Monitor<br/>aws-pipeline-gitops]
+        C --> D[📋 Manifest Analysis<br/>deployment.yaml<br/>service.yaml]
+        D --> E[🔄 Desired State Check]
         
         subgraph "Sync Process"
-            D1[🔍 Current State Analysis]
-            D2[📊 Drift Detection]
-            D3[🔄 Sync Decision]
-            D4[⚙️ Kubernetes Apply]
+            E1[🔍 Current State Analysis]
+            E2[📊 Drift Detection]
+            E3[🔄 Sync Decision<br/>Auto Sync]
+            E4[⚙️ Kubernetes Apply]
         end
         
-        D --> D1
-        D1 --> D2
-        D2 --> D3
-        D3 --> D4
+        E --> E1
+        E1 --> E2
+        E2 --> E3
+        E3 --> E4
         
-        D4 --> E[📊 Status Update]
-        E --> F[🔔 Notification]
+        E4 --> F[📦 Pod Creation]
+        F --> G[📊 Status Update]
+        G --> H[🔔 Notification]
         
         subgraph "Rollback Process"
-            G[📋 Rollback Request] --> H[🔄 Previous State]
-            H --> I[⚙️ State Restore]
-            I --> J[📊 Rollback Complete]
+            I[📋 Rollback Request] --> J[🔄 Previous State]
+            J --> K[⚙️ State Restore]
+            K --> L[📊 Rollback Complete]
         end
         
-        F --> G
+        H --> I
     end
     
     subgraph "ArgoCD Integration"
-        K[GitHub Repository] --> A
-        L[Kubernetes Cluster] --> D4
-        M[Jenkins Pipeline] --> F
-        N[ArgoCD Dashboard] --> E
+        M[Jenkins API Token] --> A
+        N[GitHub GitOps Repo] --> C
+        O[Kubernetes EKS Cluster] --> E4
+        P[ArgoCD Dashboard] --> G
     end
     
-    style D3 fill:#e8f5e8
-    style D4 fill:#c8e6c9
-    style J fill:#c8e6c9
+    style A fill:#fff3e0
+    style E3 fill:#e8f5e8
+    style E4 fill:#c8e6c9
+    style L fill:#c8e6c9
 ```
 
 ## 🌐 GitHub Detaylı Süreç Diyagramı
@@ -280,52 +270,34 @@ graph TB
 ```mermaid
 graph TB
     subgraph "GitHub Repository Process"
-        A[👨‍💻 Developer Push] --> B[📋 Code Validation]
-        B --> C[🔍 Branch Protection]
-        C --> D[📊 Pull Request]
-        
-        subgraph "PR Process"
-            D1[🔍 Code Review]
-            D2[🧪 CI Checks]
-            D3[✅ Approval]
-            D4[🔄 Merge]
-        end
-        
-        D --> D1
-        D1 --> D2
-        D2 --> D3
-        D3 --> D4
-        
-        D4 --> E[🚀 Webhook Trigger]
+        A[👨‍💻 Developer Push] --> B[📋 Code Push to Main]
+        B --> C[🚀 Webhook Trigger]
         
         subgraph "Webhook Events"
-            E1[📥 Push Event]
-            E2[🔄 Pull Request Event]
-            E3[🏷️ Tag Event]
-            E4[🔀 Branch Event]
+            C1[📥 Push Event]
+            C2[🔄 Pull Request Event]
+            C3[🏷️ Tag Event]
         end
         
-        E --> E1
-        E --> E2
-        E --> E3
-        E --> E4
+        C --> C1
+        C --> C2
+        C --> C3
         
-        E1 --> F[📤 Jenkins Notification]
-        E2 --> F
-        E3 --> F
-        E4 --> F
+        C1 --> D[📤 Jenkins Webhook]
+        C2 --> D
+        C3 --> D
     end
     
     subgraph "GitHub Integration"
-        G[Jenkins Webhook] --> F
-        H[SonarQube Integration] --> D2
-        I[ArgoCD Monitoring] --> E
-        J[GitHub Actions] --> D2
+        E[Jenkins Pipeline] --> D
+        F[GitHub Repository<br/>aws-pipeline] --> C
+        G[GitOps Repository<br/>aws-pipeline-gitops] --> H[ArgoCD Monitor]
     end
     
-    style C fill:#e8f5e8
-    style D3 fill:#c8e6c9
-    style F fill:#fff3e0
+    style A fill:#e1f5fe
+    style C fill:#fff3e0
+    style D fill:#fff3e0
+    style H fill:#e0f2f1
 ```
 
 ## 📊 Tam Entegrasyon Detay Diyagramı
@@ -334,46 +306,50 @@ graph TB
 graph TB
     subgraph "Complete DevOps Integration"
         subgraph "Source Control"
-            GH[📁 GitHub]
+            GH[📁 GitHub<br/>aws-pipeline]
             DEV[👨‍💻 Developer]
         end
         
-        subgraph "CI/CD Pipeline"
+        subgraph "CI Pipeline"
             J[🚀 Jenkins]
             SQ[🔍 SonarQube]
-            T[🔒 Trivy]
             D[🐳 Docker]
+            T[🔒 Trivy]
         end
         
         subgraph "Container Registry"
             DH[📦 Docker Hub]
         end
         
-        subgraph "Orchestration"
-            K[⚙️ Kubernetes]
+        subgraph "GitOps & Orchestration"
+            GH_GITOPS[📁 GitHub GitOps<br/>aws-pipeline-gitops]
             A[🔄 ArgoCD]
+            K[⚙️ Kubernetes EKS]
         end
         
         subgraph "Monitoring"
-            M[📊 Monitoring]
-            L[📋 Logging]
+            P[📊 Prometheus]
+            G[📈 Grafana]
         end
     end
     
     DEV -->|Push Code| GH
     GH -->|Webhook| J
+    J -->|Test & Build| SQ
     J -->|Quality Check| SQ
-    J -->|Security Scan| T
-    J -->|Build Image| D
+    SQ -->|Quality Gate| J
+    J -->|Build & Push| D
     D -->|Push Image| DH
-    J -->|Deploy| K
-    DH -->|Pull Image| K
-    GH -->|Git Changes| A
-    A -->|Sync| K
-    K -->|Status| A
-    A -->|Notification| J
-    K -->|Metrics| M
-    K -->|Logs| L
+    DH -->|Image Ready| T
+    T -->|Scan Complete| J
+    J -->|Trigger API| A
+    GH_GITOPS -->|Manifest Changes| A
+    A -->|GitOps Sync| K
+    K -->|Pull Image| DH
+    K -->|Pod Status| A
+    J -->|Metrics| P
+    K -->|Metrics| P
+    P -->|Data Source| G
     
     style GH fill:#f3e5f5
     style J fill:#fff3e0
@@ -383,8 +359,9 @@ graph TB
     style DH fill:#f1f8e9
     style K fill:#fce4ec
     style A fill:#e0f2f1
-    style M fill:#fff8e1
-    style L fill:#f3e5f5
+    style P fill:#ffebee
+    style G fill:#f3e5f5
+    style GH_GITOPS fill:#f3e5f5
 ```
 
 ## 🔄 Pipeline Fail Scenarios Diyagramı
@@ -392,33 +369,29 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Pipeline Failure Scenarios"
-        A[🚀 Pipeline Start] --> B[🧪 Unit Tests]
+        A[🚀 Pipeline Start] --> B[🧪 Test Maven]
         B --> C{Test Results}
-        C -->|Pass| D[🔍 SonarQube]
+        C -->|Pass| D[🔨 Build Maven]
         C -->|Fail| E1[❌ Test Failure]
         
-        D --> F{Quality Gate}
-        F -->|Pass| G[🔒 Trivy Scan]
+        D --> E[🔍 SonarQube Analysis]
+        E --> F{Quality Gate}
+        F -->|Pass| G[🐳 Docker Build & Push]
         F -->|Fail| E2[❌ Quality Failure]
         
-        G --> H{Security Check}
-        H -->|Pass| I[🐳 Docker Build]
-        H -->|Fail| E3[❌ Security Failure]
-        
-        I --> J[📤 Docker Push]
-        J --> K[⚙️ K8s Deploy]
-        K --> L[🔄 ArgoCD Sync]
-        L --> M[✅ Success]
+        G --> H[📦 DockerHub Registry]
+        H --> I[🔒 Trivy Scan]
+        I --> J[✅ Continue Pipeline]
+        J --> K[🔄 Trigger ArgoCD]
+        K --> L[✅ Success]
     end
     
     subgraph "Failure Handling"
-        E1 --> N1[📧 Test Notification]
-        E2 --> N2[📧 Quality Notification]
-        E3 --> N3[📧 Security Notification]
+        E1 --> N1[❌ Pipeline Stop]
+        E2 --> N2[❌ Pipeline Stop]
         
         N1 --> O[🔧 Developer Fix]
         N2 --> O
-        N3 --> O
         
         O --> P[🔄 Retry Pipeline]
         P --> A
@@ -426,9 +399,7 @@ graph TB
     
     style C fill:#ffebee
     style F fill:#ffebee
-    style H fill:#ffebee
     style E1 fill:#ffcdd2
     style E2 fill:#ffcdd2
-    style E3 fill:#ffcdd2
-    style M fill:#c8e6c9
+    style L fill:#c8e6c9
 ```
