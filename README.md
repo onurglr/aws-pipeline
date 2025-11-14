@@ -16,7 +16,6 @@ Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının 
 | **SonarQube** | 9.0+ | Kod kalitesi analizi |
 | **Trivy** | En Son | Güvenlik taraması |
 | **ArgoCD** | 2.12+ | GitOps sürekli dağıtım |
-| **Helm** | 3.12+ | Kubernetes paket yöneticisi |
 | **Prometheus** | 2.45+ | Metrik toplama ve izleme |
 | **Grafana** | 10.2+ | Görselleştirme ve dashboard |
 | **AWS EKS** | 1.28+ | Yönetilen Kubernetes servisi |
@@ -208,7 +207,7 @@ Container'ları production ortamına otomatik olarak deploy etmek ve GitOps ile 
 #### **🔧 Kullanılan Araçlar**
 - **Kubernetes EKS**: Container orchestration
 - **ArgoCD**: GitOps continuous deployment
-- **Helm**: Kubernetes package management
+- **Kubernetes Manifests**: deployment.yaml ve service.yaml dosyaları
 
 #### **📊 CD & GitOps Workflow**
 ```mermaid
@@ -216,26 +215,22 @@ graph TB
     JM[🚀 Jenkins] -->|Trigger CD Pipeline| A[🔄 ArgoCD]
     DH[📦 DockerHub] -->|Image Pull| K8S[⚙️ Kubernetes EKS]
     A -->|GitOps Sync| K8S
-    A -->|Helm Charts| H[📦 Helm]
-    H -->|Deploy| K8S
+    GH[📁 GitHub GitOps] -->|Manifest Changes<br/>deployment.yaml<br/>service.yaml| A
     K8S -->|Pod Management| APP[🏃 Application Pods]
-    
-    GH[📁 GitHub GitOps] -->|Manifest Changes| A
     
     style JM fill:#fff3e0
     style K8S fill:#fce4ec
     style DH fill:#f1f8e9
     style A fill:#e0f2f1
-    style H fill:#e8eaf6
     style APP fill:#fff8e1
     style GH fill:#f3e5f5
 ```
 
 #### **🔄 Süreç Akışı**
 1. **Jenkins** ArgoCD'yi tetikler (Trigger CD Pipeline)
-2. **ArgoCD** GitOps repository'yi izler
-3. **Kubernetes** DockerHub'dan image'ı çeker
-4. **Helm** ile Kubernetes'e deploy edilir
+2. **ArgoCD** GitOps repository'yi izler ([aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops))
+3. **ArgoCD** Kubernetes manifest dosyalarını (deployment.yaml, service.yaml) Kubernetes'e uygular
+4. **Kubernetes** DockerHub'dan image'ı çeker ve pod'ları oluşturur
 5. **Application Pods** çalışmaya başlar
 
 ---
@@ -314,6 +309,7 @@ aws-pipeline/
 | Jenkins Agent | t4g.large | 2 | 8GB | 15GB | Build işlemleri |
 | SonarQube | t4g.medium | 2 | 4GB | 15GB | Kod kalitesi analizi |
 | EKS Bootstrap | t4g.small | 2 | 2GB | 15GB | Küme yönetimi |
+| EKS Worker Nodes | t4g.medium | 2 | 4GB | 15GB | Pod'ları çalıştıran worker node'lar |
 
 ### 🔗 Makine İletişim Diyagramı
 
@@ -322,7 +318,7 @@ graph TB
     subgraph "AWS Infrastructure"
         JM[Jenkins Master<br/>t4g.xlarge<br/>🚀 CI/CD Orkestratörü]
         JA[Jenkins Agent<br/>t4g.large<br/>🔨 Build İşlemleri]
-        SQ[SonarQube<br/>t4g.medium<br/>🔍 Kod Kalitesi]
+        SQ[SonarQube + PostgreSQL<br/>t4g.medium<br/>🔍 Kod Kalitesi<br/>🐘 Database]
         EKS[EKS Bootstrap<br/>t4g.small<br/>⚙️ Küme Yönetimi]
         K8S[Kubernetes Cluster<br/>EKS Nodes<br/>🏃 Uygulama Çalıştırma]
     end
@@ -330,7 +326,6 @@ graph TB
     subgraph "External Services"
         GH[GitHub Repository]
         DH[Docker Hub]
-        PG[PostgreSQL]
     end
     
     %% İletişim akışları
@@ -340,7 +335,6 @@ graph TB
     JM -->|Deploy Command| K8S
     JA -->|Docker Images| DH
     DH -->|Image Pull| K8S
-    SQ -->|Data Storage| PG
     EKS -->|Cluster Management| K8S
     
     style JM fill:#fff3e0
@@ -350,7 +344,6 @@ graph TB
     style K8S fill:#e0f2f1
     style GH fill:#f3e5f5
     style DH fill:#f1f8e9
-    style PG fill:#f3e5f5
 ```
 
 ### 📋 Kurulum Özeti
