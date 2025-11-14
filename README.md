@@ -463,6 +463,23 @@ IMAGE_TAG = "1.0.${BUILD_NUMBER}"
 - **Trigger**: Jenkins API token ile `Trigger CD Pipeline` stage'den tetiklenir
 
 ### 📊 Monitoring Konfigürasyonu
+
+#### **📊 Monitoring Workflow**
+```mermaid
+graph LR
+    JM[🚀 Jenkins Master<br/>Build Metrics<br/>Job Status] -->|Metrics Export| P[📊 Prometheus<br/>Metrics Collection<br/>Time Series DB]
+    K8S[⚙️ Kubernetes Cluster<br/>Pod Metrics<br/>Node Metrics<br/>Application Metrics] -->|Metrics Export| P
+    P -->|Data Source| G[📈 Grafana<br/>Dashboards<br/>Visualization]
+    G -->|View Metrics| Team[👥 Development Team<br/>Real-time Monitoring<br/>Alerts]
+
+    style JM fill:#fff3e0
+    style K8S fill:#fce4ec
+    style P fill:#ffebee
+    style G fill:#f3e5f5
+    style Team fill:#e1f5fe
+```
+
+#### **Konfigürasyon Detayları**
 - **Prometheus**: Jenkins ve Kubernetes metrics collection
 - **Grafana**: Metrics visualization ve dashboards
 - **Targets**: Jenkins Master, Kubernetes cluster, Application pods
