@@ -170,22 +170,22 @@ Başarılı build'i container'a dönüştürmek ve güvenlik taraması yapmak.
 
 #### **📊 Container & Security Workflow**
 ```mermaid
-graph LR
-    JM[🚀 Jenkins<br/>Build Success] --> D[🐳 Docker Build<br/>Create Image]
+graph TB
+    JM[🚀 Jenkins<br/>Build Success] --> D[🐳 Docker Build]
     D --> IMG[📦 Docker Image<br/>onurguler18/aws-pipeline]
     IMG --> T[🔒 Trivy Scanner<br/>Security Scan]
-    T --> SEC[🛡️ Security Report<br/>Vulnerability Check]
-    SEC --> DEC{✅ Güvenli mi?<br/>Pass/Fail}
-    DEC -->|Pass ✅| PUSH[📤 Jenkins Push<br/>Push to Registry]
-    DEC -->|Fail ❌| STOP[⛔ Pipeline Stop<br/>Build Failed]
-    PUSH --> DH[📦 DockerHub Registry<br/>Image Published]
+    T --> SEC[🛡️ Security Report]
+    SEC -->|Pass/Fail Sonucu| JM2[🚀 Jenkins<br/>Karar Verme]
+    JM2 -->|Pass ✅| PUSH[📤 Push to DockerHub]
+    JM2 -->|Fail ❌| STOP[⛔ Pipeline Stop]
+    PUSH --> DH[📦 DockerHub Registry]
 
     style JM fill:#fff3e0
+    style JM2 fill:#fff3e0
     style D fill:#e3f2fd
     style IMG fill:#f1f8e9
     style T fill:#ffebee
     style SEC fill:#ffcdd2
-    style DEC fill:#ffe0b2
     style PUSH fill:#e8eaf6
     style STOP fill:#ffccbc
     style DH fill:#e0f2f1
