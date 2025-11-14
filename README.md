@@ -354,7 +354,7 @@ graph TB
 - **GitHub webhook** entegrasyonu
 - **Agent bağlantısı** kurulumu
 
-#### 🔌 Gerekli Jenkins Plugin'leri
+#### 🔌 Gerekli Jenkins Plugin'leri (Jenkins Master'a Kurulacak)
 - **Git Plugin** - Git repository entegrasyonu
 - **GitHub Plugin** - GitHub webhook ve entegrasyonu
 - **Maven Integration Plugin** - Maven build desteği
@@ -365,7 +365,8 @@ graph TB
 - **Blue Ocean** - Modern pipeline görselleştirme
 - **Pipeline Stage View Plugin** - Stage detaylı görüntüleme
 - **Build Timeout Plugin** - Build timeout kontrolü
-- **Credentials Plugin** - Güvenli credential yönetimi
+
+> **Not:** Tüm plugin'ler Jenkins Master'a kurulur. Agent'lar Master'daki plugin'leri kullanır ve build işlemlerini çalıştırır.
 
 #### 🔨 Jenkins Agent (t4g.large)
 - **Java 21 + Maven** kurulumu
@@ -408,125 +409,63 @@ graph TB
 ## ⚙️ DevOps Konfigürasyon Detayları
 
 ### 🔧 Jenkins Konfigürasyonu
-- **Pipeline Script**: Declarative pipeline syntax ile CI/CD otomasyonu
-- **Build Triggers**: GitHub webhook ve SCM polling konfigürasyonu
-- **Environment Variables**: Build environment ve credential yönetimi
-- **Plugin Installation**: Docker, Kubernetes, SonarQube, Trivy, Git, Maven plugin'leri
+
+#### Pipeline Ayarları
+- **Pipeline Type**: Declarative pipeline syntax
+- **Build Triggers**: GitHub webhook ve SCM polling
+- **Agent Label**: `My-Jenkins-Agent`
+- **Tools**: Maven3, Java21
+
+#### Credential Yönetimi (Jenkins Master → Manage Jenkins → Credentials)
+- **`dockerhub`** (Secret text): DockerHub Personal Access Token
+  - Kullanım: Docker image push işlemleri
+  - Pipeline'da: `DOCKER_LOGIN = 'dockerhub'`
+- **`jenkins-sonar-token`** (Secret text): SonarQube token
+  - Kullanım: SonarQube analiz ve quality gate kontrolü
+  - Pipeline'da: `credentialsId: 'jenkins-sonar-token'`
+- **`JENKINS_API_TOKEN`** (Secret text): Jenkins API token
+  - Kullanım: ArgoCD CD pipeline'ını tetiklemek için
+  - Pipeline'da: `credentials("JENKINS_API_TOKEN")`
+
+#### Environment Variables
+```groovy
+APP_NAME = "aws-pipeline"
+RELEASE = "1.0"
+DOCKER_USER = "onurguler18"
+IMAGE_NAME = "onurguler18/aws-pipeline"
+IMAGE_TAG = "1.0.${BUILD_NUMBER}"
+```
 
 ### 🐳 Docker Konfigürasyonu
-- **Multi-stage Build**: Production-ready image oluşturma
-- **Security Scanning**: Container güvenlik taraması ve vulnerability check
-- **Image Optimization**: Layer caching ve boyut optimizasyonu
-- **Registry Integration**: DockerHub authentication ve push automation
+- **Registry**: DockerHub (`onurguler18/aws-pipeline`)
+- **Build**: Multi-stage build (Dockerfile)
+- **Image Tagging**: `latest` ve version tag (`1.0.${BUILD_NUMBER}`)
+- **Security**: Trivy scan ile vulnerability kontrolü
 
 ### ⚙️ Kubernetes Konfigürasyonu
-- **Deployment Strategy**: Rolling update ve zero-downtime deployment
-- **Resource Management**: CPU ve memory limits ile resource optimization
-- **Health Checks**: Liveness ve readiness probe konfigürasyonu
-- **Service Mesh**: Load balancing ve service discovery
+- **Deployment**: `deployment.yaml` (3 replicas, rolling update)
+- **Service**: `service.yaml` (LoadBalancer)
+- **Resources**: 
+  - Requests: 256Mi memory, 250m CPU
+  - Limits: 512Mi memory, 500m CPU
+- **Image**: `onurguler18/aws-pipeline:latest`
 
 ### 🔍 SonarQube Konfigürasyonu
-- **Quality Gates**: Kod kalitesi kriterleri ve threshold ayarları
-- **Code Coverage**: Test coverage requirements ve reporting
-- **Security Rules**: Güvenlik kuralları ve vulnerability detection
-- **Integration**: Jenkins pipeline ile otomatik quality gate kontrolü
+- **Project Key**: `aws-pipeline`
+- **Quality Gate**: Coverage >80%, Security Rating A
+- **Integration**: Jenkins pipeline ile otomatik analiz
+- **Database**: PostgreSQL (aynı VM'de)
 
 ### 🔄 ArgoCD Konfigürasyonu
-- **GitOps Workflow**: Git-based deployment ve configuration management
-- **Sync Policies**: Otomatik sync ve manual approval workflows
-- **Application Monitoring**: Deployment status ve health monitoring
-- **Rollback Capabilities**: Hızlı rollback ve version management
-- **GitOps Repository**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops) repository'sini ArgoCD'ye bağlama
+- **GitOps Repository**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops)
+- **Application Name**: `devops-application`
+- **Sync Policy**: Automatic sync
+- **Trigger**: Jenkins API token ile `Trigger CD Pipeline` stage'den tetiklenir
 
 ### 📊 Monitoring Konfigürasyonu
-- **Metrics Collection**: Application ve infrastructure metrics
-- **Log Aggregation**: Centralized logging ve log analysis
-- **Alerting Rules**: Threshold-based alerting ve notification
-- **Dashboard Configuration**: Real-time monitoring ve visualization
-
-## 📊 İzleme ve Günlük Tutma
-
-### 🔧 Jenkins İzleme
-- Build status API integration ve console output monitoring
-- Jenkins log tracking ve system log configuration
-- Disk usage monitoring ve build artifact cleanup
-
-### ⚙️ Kubernetes İzleme
-- Pod status monitoring ve detailed pod inspection
-- Service status tracking ve cluster health checks
-- Real-time log monitoring ve log rotation setup
-
-### 🔍 SonarQube İzleme
-- System status API integration ve web interface monitoring
-- SonarQube log tracking ve administration configuration
-- PostgreSQL database status ve size monitoring
-
-### 🔄 ArgoCD İzleme
-- Application status tracking ve sync monitoring
-- ArgoCD server ve application controller log monitoring
-- Application history ve sync validation
-
-## 🔒 Güvenlik
-
-### Güvenlik Taraması
-- **Trivy**: Container image güvenlik taraması
-- **SonarQube**: Kod kalitesi ve güvenlik analizi
-- **Docker**: Multi-stage build ile güvenli image oluşturma
-
-### En İyi Uygulamalar
-- Container image'ları güncel base image'larla oluşturma
-- Resource limits tanımlama
-- Security scanning'i pipeline'a entegre etme
-- Secrets management
-
-## 🚀 Dağıtım Stratejisi
-
-### Rolling Update
-```bash
-# Yeni versiyonu deploy et
-kubectl set image deployment/devops-application-deployment devops-application=onurguler18/devops-application:1.0.123
-
-# Rollout durumunu kontrol et
-kubectl rollout status deployment/devops-application-deployment
-
-# Rollback (gerekirse)
-kubectl rollout undo deployment/devops-application-deployment
-```
-
-## 📈 Performans ve Ölçeklendirme
-
-### Kaynak Yönetimi (t4g.xlarge optimize edilmiş)
-```yaml
-resources:
-  requests:
-    memory: "256Mi"
-    cpu: "250m"
-  limits:
-    memory: "512Mi"
-    cpu: "500m"
-```
-
-### Otomatik Ölçeklendirme
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: devops-application-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: devops-application-deployment
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-```
+- **Prometheus**: Jenkins ve Kubernetes metrics collection
+- **Grafana**: Metrics visualization ve dashboards
+- **Targets**: Jenkins Master, Kubernetes cluster, Application pods
 
 ## 📚 Kaynaklar
 
