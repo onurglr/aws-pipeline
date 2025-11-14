@@ -170,17 +170,18 @@ Başarılı build'i container'a dönüştürmek ve güvenlik taraması yapmak.
 
 #### **📊 Container & Security Workflow**
 ```mermaid
-graph LR
-    JM[🚀 Jenkins] -->|Build| D[🐳 Docker Build]
-    D --> IMG[📦 Docker Image]
-    IMG --> T[🔒 Trivy Scan]
-    T -->|Pass/Fail| DEC{✅ Güvenli?}
-    DEC -->|Evet| DH[📦 DockerHub Push]
-    DEC -->|Hayır| STOP[⛔ Stop Pipeline]
+graph TB
+    subgraph "Build & Scan"
+        JM[🚀 Jenkins] --> D[🐳 Docker Build]
+        D --> T[🔒 Trivy Scan]
+    end
+    
+    T --> DEC{✅ Güvenli?}
+    DEC -->|Evet| DH[📦 DockerHub]
+    DEC -->|Hayır| STOP[⛔ Stop]
 
     style JM fill:#fff3e0
     style D fill:#e3f2fd
-    style IMG fill:#f1f8e9
     style T fill:#ffebee
     style DEC fill:#ffe0b2
     style DH fill:#e0f2f1
