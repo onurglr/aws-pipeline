@@ -1,8 +1,8 @@
-# Detaylı DevOps Araç Diyagramları
+# Detailed DevOps Tool Diagrams
 
-> **🌐 English Version:** [detailed-devops-diagrams-en.md](detailed-devops-diagrams-en.md)
+> **🇹🇷 Turkish Version:** [detailed-devops-diagrams.md](detailed-devops-diagrams.md)
 
-## 🚀 Jenkins Detaylı Süreç Diyagramı
+## 🚀 Jenkins Detailed Process Diagram
 
 ```mermaid
 graph TB
@@ -25,12 +25,12 @@ graph TB
         M --> N[✅ Pipeline Complete]
     end
     
-    subgraph "Dış Sistem Bağlantıları"
-        P[GitHub Repository<br/>Kod Kaynağı] -->|Webhook Gönderir| A
-        Q[SonarQube Server<br/>Kod Kalitesi] -->|Analiz Yapar| E
-        H -->|Image Push| R[Docker Hub Registry<br/>Image Depolama]
-        S[Trivy Scanner<br/>Güvenlik Taraması] -->|Tarama Yapar| J
-        M -->|API İsteği| T[ArgoCD API<br/>CD Tetikleme]
+    subgraph "External System Connections"
+        P[GitHub Repository<br/>Code Source] -->|Sends Webhook| A
+        Q[SonarQube Server<br/>Code Quality] -->|Performs Analysis| E
+        H -->|Image Push| R[Docker Hub Registry<br/>Image Storage]
+        S[Trivy Scanner<br/>Security Scanning] -->|Performs Scan| J
+        M -->|API Request| T[ArgoCD API<br/>CD Trigger]
     end
     
     style A fill:#fff3e0
@@ -40,7 +40,7 @@ graph TB
     style N fill:#c8e6c9
 ```
 
-## 🐳 Docker Detaylı Süreç Diyagramı
+## 🐳 Docker Detailed Process Diagram
 
 ```mermaid
 graph TB
@@ -66,11 +66,11 @@ graph TB
         F --> G[🔒 Trivy Scan<br/>Security Check]
     end
     
-    subgraph "Dış Sistem Bağlantıları"
-        H[Jenkins Pipeline<br/>CI/CD Orkestratörü] -->|Tetikler| A
-        E -->|Image Push| I[Docker Hub Registry<br/>Container Depolama]
-        J[Trivy Scanner<br/>Güvenlik Taraması] -->|Tarama Yapar| G
-        F -->|Image Pull| K[Kubernetes Cluster<br/>Image Çekme]
+    subgraph "External System Connections"
+        H[Jenkins Pipeline<br/>CI/CD Orchestrator] -->|Triggers| A
+        E -->|Image Push| I[Docker Hub Registry<br/>Container Storage]
+        J[Trivy Scanner<br/>Security Scanning] -->|Performs Scan| G
+        F -->|Image Pull| K[Kubernetes Cluster<br/>Image Pull]
     end
     
     style A fill:#fff3e0
@@ -79,7 +79,7 @@ graph TB
     style F fill:#f1f8e9
 ```
 
-## ⚙️ Kubernetes Detaylı Süreç Diyagramı
+## ⚙️ Kubernetes Detailed Process Diagram
 
 ```mermaid
 graph TB
@@ -117,11 +117,11 @@ graph TB
         H --> K
     end
     
-    subgraph "Dış Sistem Bağlantıları"
-        L[ArgoCD GitOps<br/>Dağıtım Yönetimi] -->|Sync Tetikler| A
-        C -->|Image Pull| M[Docker Hub<br/>Image Kaynağı]
-        H -->|Metrik Gönderir| N[Prometheus<br/>Metrik Toplama]
-        L -->|Manifest İzler| O[GitHub GitOps Repo<br/>Manifest Kaynağı]
+    subgraph "External System Connections"
+        L[ArgoCD GitOps<br/>Deployment Management] -->|Triggers Sync| A
+        C -->|Image Pull| M[Docker Hub<br/>Image Source]
+        H -->|Sends Metrics| N[Prometheus<br/>Metric Collection]
+        L -->|Monitors Manifest| O[GitHub GitOps Repo<br/>Manifest Source]
     end
     
     style A fill:#e0f2f1
@@ -130,7 +130,7 @@ graph TB
     style E4 fill:#c8e6c9
 ```
 
-## 🔍 SonarQube Detaylı Süreç Diyagramı
+## 🔍 SonarQube Detailed Process Diagram
 
 ```mermaid
 graph TB
@@ -167,10 +167,10 @@ graph TB
         H --> I
     end
     
-    subgraph "Dış Sistem Bağlantıları"
-        J[Jenkins Pipeline<br/>CI/CD Tetikleme] -->|Tetikler| A
-        K[GitHub Repository<br/>Kod Kaynağı] -->|Kod Çeker| C
-        I -->|Rapor Gösterir| L[Quality Dashboard<br/>Rapor Görüntüleme]
+    subgraph "External System Connections"
+        J[Jenkins Pipeline<br/>CI/CD Trigger] -->|Triggers| A
+        K[GitHub Repository<br/>Code Source] -->|Pulls Code| C
+        I -->|Shows Report| L[Quality Dashboard<br/>Report Viewing]
     end
     
     style F fill:#e8f5e8
@@ -178,7 +178,7 @@ graph TB
     style H fill:#ffcdd2
 ```
 
-## 🔒 Trivy Detaylı Süreç Diyagramı
+## 🔒 Trivy Detailed Process Diagram
 
 ```mermaid
 graph TB
@@ -206,11 +206,11 @@ graph TB
         G --> H[🔄 Continue Pipeline]
     end
     
-    subgraph "Dış Sistem Bağlantıları"
-        I[Jenkins Pipeline<br/>Tarama Tetikleme] -->|Tetikler| A
-        B -->|Image Okur| J[Docker Hub Registry<br/>Image Kaynağı]
-        C -->|CVE Verisi Çeker| K[CVE Database<br/>Güvenlik Veritabanı]
-        G -->|Rapor Gönderir| L[Jenkins Console<br/>Rapor Görüntüleme]
+    subgraph "External System Connections"
+        I[Jenkins Pipeline<br/>Scan Trigger] -->|Triggers| A
+        B -->|Reads Image| J[Docker Hub Registry<br/>Image Source]
+        C -->|Fetches CVE Data| K[CVE Database<br/>Security Database]
+        G -->|Sends Report| L[Jenkins Console<br/>Report Viewing]
     end
     
     style A fill:#fff3e0
@@ -219,7 +219,7 @@ graph TB
     style H fill:#e8f5e8
 ```
 
-## 🔄 ArgoCD Detaylı Süreç Diyagramı
+## 🔄 ArgoCD Detailed Process Diagram
 
 ```mermaid
 graph TB
@@ -254,11 +254,11 @@ graph TB
         H --> I
     end
     
-    subgraph "Dış Sistem Bağlantıları"
-        M[Jenkins API Token<br/>CD Pipeline Tetikleme] -->|Tetikler| A
-        C -->|Manifest İzler| N[GitHub GitOps Repo<br/>aws-pipeline-gitops]
-        E4 -->|Apply Eder| O[Kubernetes EKS Cluster<br/>Dağıtım Hedefi]
-        G -->|Durum Gösterir| P[ArgoCD Dashboard<br/>Durum Görüntüleme]
+    subgraph "External System Connections"
+        M[Jenkins API Token<br/>CD Pipeline Trigger] -->|Triggers| A
+        C -->|Monitors Manifest| N[GitHub GitOps Repo<br/>aws-pipeline-gitops]
+        E4 -->|Applies| O[Kubernetes EKS Cluster<br/>Deployment Target]
+        G -->|Shows Status| P[ArgoCD Dashboard<br/>Status Viewing]
     end
     
     style A fill:#fff3e0
@@ -267,7 +267,7 @@ graph TB
     style L fill:#c8e6c9
 ```
 
-## 🌐 GitHub Detaylı Süreç Diyagramı
+## 🌐 GitHub Detailed Process Diagram
 
 ```mermaid
 graph TB
@@ -290,10 +290,10 @@ graph TB
         C3 --> D
     end
     
-    subgraph "Dış Sistem Bağlantıları"
-        D -->|Webhook Alır| E[Jenkins Pipeline<br/>Webhook Alıcı]
-        F[GitHub Repository<br/>aws-pipeline<br/>Ana Kod Depo] -->|Push Event| C
-        H[ArgoCD Monitor<br/>İzleme] -->|Manifest İzler| G[GitOps Repository<br/>aws-pipeline-gitops<br/>Manifest Depo]
+    subgraph "External System Connections"
+        D -->|Receives Webhook| E[Jenkins Pipeline<br/>Webhook Receiver]
+        F[GitHub Repository<br/>aws-pipeline<br/>Main Code Repo] -->|Push Event| C
+        H[ArgoCD Monitor<br/>Monitoring] -->|Monitors Manifest| G[GitOps Repository<br/>aws-pipeline-gitops<br/>Manifest Repo]
     end
     
     style A fill:#e1f5fe
@@ -302,7 +302,7 @@ graph TB
     style H fill:#e0f2f1
 ```
 
-## 📊 Tam Entegrasyon Detay Diyagramı
+## 📊 Complete Integration Detail Diagram
 
 ```mermaid
 graph TB
@@ -368,7 +368,7 @@ graph TB
     style GH_GITOPS fill:#f3e5f5
 ```
 
-## 🔄 Pipeline Fail Scenarios Diyagramı
+## 🔄 Pipeline Fail Scenarios Diagram
 
 ```mermaid
 graph TB
@@ -407,3 +407,4 @@ graph TB
     style E2 fill:#ffcdd2
     style L fill:#c8e6c9
 ```
+

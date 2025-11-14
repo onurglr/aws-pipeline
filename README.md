@@ -1,5 +1,7 @@
 # 🚀 AWS DevOps Pipeline Projesi
 
+> **🌐 English Version:** [README-en.md](README-en.md)
+
 ## 📋 Proje Özeti
 Bu proje, modern DevOps uygulamalarını kullanarak Spring Boot uygulamasının tam otomatik CI/CD sürecini içerir. Jenkins, Docker, Kubernetes, SonarQube, Trivy ve AWS EKS teknolojileri kullanılarak geliştirilmiştir.
 
