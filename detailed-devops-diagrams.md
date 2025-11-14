@@ -233,7 +233,7 @@ graph TB
 ## 🔄 ArgoCD Detaylı Süreç Diyagramı
 
 ```mermaid
-rule TB
+graph TB
     subgraph "ArgoCD GitOps Process"
         A[📥 GitHub Webhook] --> B[🔍 Repository Monitoring]
         B --> C[📋 Manifest Analysis]

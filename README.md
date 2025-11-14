@@ -82,18 +82,18 @@ graph TB
 
 ## 📋 DevOps Pipeline Bölümleri
 
-### 1️⃣ Development & Version Control
+### 1️⃣ Geliştirme & Sürüm Kontrolü
 
 #### **🎯 Bölüm Amacı**
 Geliştiricinin yerel ortamında kod yazması ve merkezi repository'ye güvenli şekilde göndermesi.
 
 #### **🔧 Kullanılan Araçlar**
 - **Java 21 & Spring Boot**: Ana uygulama geliştirme
-- **Apache Maven**: Build ve dependency management
-- **Git**: Local version control
-- **GitHub**: Central repository
+- **Apache Maven**: Build ve bağımlılık yönetimi
+- **Git**: Yerel sürüm kontrolü
+- **GitHub**: Merkezi repository
 
-#### **📊 Development Workflow**
+#### **📊 Geliştirme Akış Diyagramı**
 ```mermaid
 graph LR
     Dev[👨‍💻 Developer<br/>Local PC] --> Code[💻 Write Code<br/>Java & Spring]
@@ -118,7 +118,7 @@ graph LR
 
 ---
 
-### 2️⃣ Continuous Integration
+### 2️⃣ Sürekli Entegrasyon
 
 #### **🎯 Bölüm Amacı**
 GitHub'dan gelen kod değişikliklerini otomatik olarak test etmek, build etmek ve kalite kontrolü yapmak.
@@ -128,7 +128,7 @@ GitHub'dan gelen kod değişikliklerini otomatik olarak test etmek, build etmek 
 - **SonarQube**: Kod kalitesi ve güvenlik analizi
 - **PostgreSQL**: SonarQube veri depolama
 
-#### **📊 CI Workflow**
+#### **📊 CI Akış Diyagramı**
 ```mermaid
 graph TB
     GH[📁 GitHub Repository] -->|Webhook Trigger| JM[🚀 Jenkins Master]
@@ -157,17 +157,17 @@ graph TB
 
 ---
 
-### 3️⃣ Containerization & Security
+### 3️⃣ Kapsayıcılaştırma & Güvenlik
 
 #### **🎯 Bölüm Amacı**
 Başarılı build'i container'a dönüştürmek ve güvenlik taraması yapmak.
 
 #### **🔧 Kullanılan Araçlar**
-- **Docker**: Containerization engine
-- **Aqua Trivy**: Security scanning
+- **Docker**: Kapsayıcılaştırma motoru
+- **Aqua Trivy**: Güvenlik taraması
 - **DockerHub**: Container registry
 
-#### **📊 Container & Security Workflow**
+#### **📊 Kapsayıcı & Güvenlik Akış Diyagramı**
 ```mermaid
 graph TB
     JM[🚀 Jenkins<br/>Build Success] --> D[🐳 Docker Build]
@@ -199,17 +199,17 @@ graph TB
 
 ---
 
-### 4️⃣ Continuous Deployment & GitOps
+### 4️⃣ Sürekli Dağıtım & GitOps
 
 #### **🎯 Bölüm Amacı**
 Container'ları production ortamına otomatik olarak deploy etmek ve GitOps ile yönetmek.
 
 #### **🔧 Kullanılan Araçlar**
 - **Kubernetes EKS**: Container orchestration
-- **ArgoCD**: GitOps continuous deployment
+- **ArgoCD**: GitOps sürekli dağıtım
 - **Kubernetes Manifests**: deployment.yaml ve service.yaml dosyaları
 
-#### **📊 CD & GitOps Workflow**
+#### **📊 CD & GitOps Akış Diyagramı**
 ```mermaid
 graph TB
     JM[🚀 Jenkins] -->|Trigger CD Pipeline| A[🔄 ArgoCD]
@@ -235,20 +235,20 @@ graph TB
 
 ---
 
-### 5️⃣ Notification
+### 5️⃣ Bildirim
 
 #### **🎯 Bölüm Amacı**
-Sistem durumu ve deployment sonuçları hakkında bildirim göndermek.
+Sistem durumu ve dağıtım sonuçları hakkında bildirim göndermek.
 
 #### **🔧 Kullanılan Araçlar**
-- **Gmail**: Email notification system
+- **Gmail**: E-posta bildirim sistemi
 
-#### **📊 Notification Workflow**
+#### **📊 Bildirim Akış Diyagramı**
 ```mermaid
 graph LR
-    A[🔄 ArgoCD] -->|Deployment Status| N[📧 Notification System]
-    N -->|Send Email| Gmail[📧 Gmail]
-    Gmail -->|Notify| Team[👥 Development Team]
+    A[🔄 ArgoCD] -->|Deployment Status| N[📧 Bildirim Sistemi]
+    N -->|E-posta Gönder| Gmail[📧 Gmail]
+    Gmail -->|Bildir| Team[👥 Geliştirme Ekibi]
     
     style A fill:#e0f2f1
     style N fill:#fff3e0
@@ -257,28 +257,28 @@ graph LR
 ```
 
 #### **🔄 Süreç Akışı**
-1. **ArgoCD** deployment durumunu izler
-2. **Notification System** email hazırlar
-3. **Gmail** ile team'e bildirim gönderir
+1. **ArgoCD** dağıtım durumunu izler
+2. **Bildirim Sistemi** e-posta hazırlar
+3. **Gmail** ile ekibe bildirim gönderir
 
 ---
 
-### 6️⃣ Monitoring
+### 6️⃣ İzleme
 
 #### **🎯 Bölüm Amacı**
-Sistem ve application metriklerini toplayıp görselleştirerek real-time monitoring sağlamak.
+Sistem ve uygulama metriklerini toplayıp görselleştirerek gerçek zamanlı izleme sağlamak.
 
 #### **🔧 Kullanılan Araçlar**
-- **Prometheus**: Metrics collection ve time series database
-- **Grafana**: Metrics visualization ve dashboards
+- **Prometheus**: Metrik toplama ve zaman serisi veritabanı
+- **Grafana**: Metrik görselleştirme ve dashboard'lar
 
-#### **📊 Monitoring Workflow**
+#### **📊 İzleme Akış Diyagramı**
 ```mermaid
 graph LR
-    JM[🚀 Jenkins Master<br/>Build Metrics<br/>Job Status] -->|Metrics Export| P[📊 Prometheus<br/>Metrics Collection<br/>Time Series DB]
-    K8S[⚙️ Kubernetes Cluster<br/>Pod Metrics<br/>Node Metrics<br/>Application Metrics] -->|Metrics Export| P
-    P -->|Data Source| G[📈 Grafana<br/>Dashboards<br/>Visualization]
-    G -->|View Metrics| Team[👥 Development Team<br/>Real-time Monitoring<br/>Alerts]
+    JM[🚀 Jenkins Master<br/>Build Metrikleri<br/>İş Durumu] -->|Metrik Export| P[📊 Prometheus<br/>Metrik Toplama<br/>Zaman Serisi VT]
+    K8S[⚙️ Kubernetes Cluster<br/>Pod Metrikleri<br/>Node Metrikleri<br/>Uygulama Metrikleri] -->|Metrik Export| P
+    P -->|Veri Kaynağı| G[📈 Grafana<br/>Dashboard'lar<br/>Görselleştirme]
+    G -->|Metrikleri Görüntüle| Team[👥 Geliştirme Ekibi<br/>Gerçek Zamanlı İzleme<br/>Uyarılar]
 
     style JM fill:#fff3e0
     style K8S fill:#fce4ec
@@ -289,9 +289,9 @@ graph LR
 
 #### **🔄 Süreç Akışı**
 1. **Jenkins Master** ve **Kubernetes Cluster** metriklerini export eder
-2. **Prometheus** metrikleri toplar ve time series database'de saklar
-3. **Grafana** Prometheus'u data source olarak kullanır ve dashboards oluşturur
-4. **Development Team** Grafana üzerinden real-time monitoring yapar ve alert'leri görür
+2. **Prometheus** metrikleri toplar ve zaman serisi veritabanında saklar
+3. **Grafana** Prometheus'u veri kaynağı olarak kullanır ve dashboard'lar oluşturur
+4. **Development Team** Grafana üzerinden gerçek zamanlı izleme yapar ve uyarıları görür
 
 ---
 
@@ -299,17 +299,71 @@ graph LR
 
 Her DevOps aracının detaylı süreç diyagramları ve entegrasyon detayları için:
 
-👉 **[Detaylı DevOps Diyagramları](detailed-devops-diagrams.md)** dosyasına bakın
+<details>
+<summary>🚀 Jenkins Detaylı Pipeline Süreci</summary>
 
-Bu dosyada şunları bulacaksınız:
-- 🚀 **Jenkins Detaylı Pipeline Süreci**
-- 🐳 **Docker Detaylı Build Süreci** 
-- ⚙️ **Kubernetes Detaylı Deployment Süreci**
-- 🔍 **SonarQube Detaylı Analiz Süreci**
-- 🔒 **Trivy Detaylı Güvenlik Tarama Süreci**
-- 🔄 **ArgoCD Detaylı GitOps Süreci**
-- 🔄 **Pipeline Fail Scenarios**
-- 🌐 **GitHub Detaylı Süreç Diyagramı**
+Jenkins pipeline aşamaları, webhook tetikleme, build süreci, quality gate kontrolü ve deployment adımlarını gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-jenkins-detaylı-süreç-diyagramı)** için tıklayın
+</details>
+
+<details>
+<summary>🐳 Docker Detaylı Build Süreci</summary>
+
+Docker multi-stage build süreci, image oluşturma, güvenlik taraması ve registry push işlemlerini gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-docker-detaylı-süreç-diyagramı)** için tıklayın
+</details>
+
+<details>
+<summary>⚙️ Kubernetes Detaylı Deployment Süreci</summary>
+
+Kubernetes deployment, pod yaşam döngüsü, health check'ler ve resource yönetimini gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-kubernetes-detaylı-süreç-diyagramı)** için tıklayın
+</details>
+
+<details>
+<summary>🔍 SonarQube Detaylı Analiz Süreci</summary>
+
+SonarQube kod kalitesi analizi, quality gate değerlendirmesi ve Jenkins entegrasyonunu gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-sonarqube-detaylı-süreç-diyagramı)** için tıklayın
+</details>
+
+<details>
+<summary>🔒 Trivy Detaylı Güvenlik Tarama Süreci</summary>
+
+Trivy container image güvenlik taraması, vulnerability tespiti ve pipeline entegrasyonunu gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-trivy-detaylı-süreç-diyagramı)** için tıklayın
+</details>
+
+<details>
+<summary>🔄 ArgoCD Detaylı GitOps Süreci</summary>
+
+ArgoCD GitOps workflow, repository monitoring, sync işlemi ve rollback mekanizmasını gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-argocd-detaylı-süreç-diyagramı)** için tıklayın
+</details>
+
+<details>
+<summary>🌐 GitHub Detaylı Süreç Diyagramı</summary>
+
+GitHub repository yönetimi, webhook tetikleme ve Jenkins entegrasyonunu gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-github-detaylı-süreç-diyagramı)** için tıklayın
+</details>
+
+<details>
+<summary>🔄 Pipeline Fail Scenarios</summary>
+
+Pipeline başarısızlık senaryoları, hata yönetimi ve recovery süreçlerini gösterir.
+
+👉 **[Detaylı diyagram](detailed-devops-diagrams.md#-pipeline-fail-scenarios-diyagramı)** için tıklayın
+</details>
+
+> 📖 **Tüm detaylı diyagramlar için:** [Detaylı DevOps Diyagramları](detailed-devops-diagrams.md) dosyasına bakın
 
 ## 📁 Proje Yapısı
 
@@ -417,12 +471,12 @@ graph TB
 - **EKS cluster** oluşturma (my-workspace-cluster)
 - **ArgoCD** deployment ve LoadBalancer setup
 
-## 🚀 Application Deployment
+## 🚀 Uygulama Dağıtımı
 
 ### 📦 Temel Dağıtım
-- Git repository cloning ve Maven build process
-- Docker image building ve container deployment
-- Kubernetes deployment ve service configuration
+- Git repository klonlama ve Maven build süreci
+- Docker image oluşturma ve container dağıtımı
+- Kubernetes deployment ve servis yapılandırması
 
 ## 🌐 API Uç Noktaları
 
@@ -445,23 +499,23 @@ graph TB
 ### 🔧 Jenkins Konfigürasyonu
 
 #### Pipeline Ayarları
-- **Pipeline Type**: Declarative pipeline syntax
-- **Build Triggers**: GitHub webhook ve SCM polling
-- **Agent Label**: `My-Jenkins-Agent`
-- **Tools**: Maven3, Java21
+- **Pipeline Tipi**: Declarative pipeline syntax
+- **Build Tetikleyicileri**: GitHub webhook ve SCM polling
+- **Agent Etiketi**: `My-Jenkins-Agent`
+- **Araçlar**: Maven3, Java21
 
-#### Credential Yönetimi (Jenkins Master → Manage Jenkins → Credentials)
+#### Kimlik Bilgisi Yönetimi (Jenkins Master → Manage Jenkins → Credentials)
 - **`dockerhub`** (Secret text): DockerHub Personal Access Token
   - Kullanım: Docker image push işlemleri
   - Pipeline'da: `DOCKER_LOGIN = 'dockerhub'`
 - **`jenkins-sonar-token`** (Secret text): SonarQube token
-  - Kullanım: SonarQube analiz ve quality gate kontrolü
+  - Kullanım: SonarQube analiz ve kalite kapısı kontrolü
   - Pipeline'da: `credentialsId: 'jenkins-sonar-token'`
 - **`JENKINS_API_TOKEN`** (Secret text): Jenkins API token
   - Kullanım: ArgoCD CD pipeline'ını tetiklemek için
   - Pipeline'da: `credentials("JENKINS_API_TOKEN")`
 
-#### Environment Variables
+#### Ortam Değişkenleri
 ```groovy
 APP_NAME = "aws-pipeline"
 RELEASE = "1.0"
@@ -472,34 +526,34 @@ IMAGE_TAG = "1.0.${BUILD_NUMBER}"
 
 ### 🐳 Docker Konfigürasyonu
 - **Registry**: DockerHub (`onurguler18/aws-pipeline`)
-- **Build**: Multi-stage build (Dockerfile)
-- **Image Tagging**: `latest` ve version tag (`1.0.${BUILD_NUMBER}`)
-- **Security**: Trivy scan ile vulnerability kontrolü
+- **Build**: Çok aşamalı build (Dockerfile)
+- **Image Etiketleme**: `latest` ve sürüm etiketi (`1.0.${BUILD_NUMBER}`)
+- **Güvenlik**: Trivy taraması ile güvenlik açığı kontrolü
 
 ### ⚙️ Kubernetes Konfigürasyonu
-- **Deployment**: `deployment.yaml` (3 replicas, rolling update)
+- **Deployment**: `deployment.yaml` (3 replika, rolling update)
 - **Service**: `service.yaml` (LoadBalancer)
-- **Resources**: 
-  - Requests: 256Mi memory, 250m CPU
-  - Limits: 512Mi memory, 500m CPU
+- **Kaynaklar**: 
+  - İstekler: 256Mi bellek, 250m CPU
+  - Limitler: 512Mi bellek, 500m CPU
 - **Image**: `onurguler18/aws-pipeline:latest`
 
 ### 🔍 SonarQube Konfigürasyonu
-- **Project Key**: `aws-pipeline`
-- **Quality Gate**: Coverage >80%, Security Rating A
-- **Integration**: Jenkins pipeline ile otomatik analiz
-- **Database**: PostgreSQL (aynı VM'de)
+- **Proje Anahtarı**: `aws-pipeline`
+- **Kalite Kapısı**: Kapsam >%80, Güvenlik Derecesi A
+- **Entegrasyon**: Jenkins pipeline ile otomatik analiz
+- **Veritabanı**: PostgreSQL (aynı VM'de)
 
 ### 🔄 ArgoCD Konfigürasyonu
 - **GitOps Repository**: [aws-pipeline-gitops](https://github.com/onurglr/aws-pipeline-gitops)
-- **Application Name**: `devops-application`
-- **Sync Policy**: Automatic sync
-- **Trigger**: Jenkins API token ile `Trigger CD Pipeline` stage'den tetiklenir
+- **Uygulama Adı**: `devops-application`
+- **Senkronizasyon Politikası**: Otomatik senkronizasyon
+- **Tetikleyici**: Jenkins API token ile `Trigger CD Pipeline` aşamasından tetiklenir
 
-### 📊 Monitoring Konfigürasyonu
-- **Prometheus**: Jenkins ve Kubernetes metrics collection
-- **Grafana**: Metrics visualization ve dashboards
-- **Targets**: Jenkins Master, Kubernetes cluster, Application pods
+### 📊 İzleme Konfigürasyonu
+- **Prometheus**: Jenkins ve Kubernetes metrik toplama
+- **Grafana**: Metrik görselleştirme ve dashboard'lar
+- **Hedefler**: Jenkins Master, Kubernetes cluster, Uygulama pod'ları
 
 ## 📚 Kaynaklar
 
@@ -534,11 +588,11 @@ Bu proje aşağıdaki DevOps hedeflerini gerçekleştirmek için tasarlanmışt�
 
 - ✅ **Otomatik CI/CD Pipeline**
 - ✅ **Container Orchestration**
-- ✅ **Code Quality Management**
-- ✅ **Security Scanning**
+- ✅ **Kod Kalitesi Yönetimi**
+- ✅ **Güvenlik Taraması**
 - ✅ **Infrastructure as Code**
-- ✅ **Monitoring & Logging**
-- ✅ **Scalable Architecture**
+- ✅ **İzleme & Günlük Tutma**
+- ✅ **Ölçeklenebilir Mimari**
 
 ---
 
