@@ -23,12 +23,12 @@ graph TB
         M --> N[✅ Pipeline Complete]
     end
     
-    subgraph "Jenkins Integration Points"
-        P[GitHub Repository] --> A
-        Q[SonarQube Server] --> E
-        R[Docker Hub Registry] --> H
-        S[Trivy Scanner] --> J
-        T[ArgoCD API] --> M
+    subgraph "Dış Sistem Bağlantıları"
+        P[GitHub Repository<br/>Kod Kaynağı] --> A
+        Q[SonarQube Server<br/>Kod Kalitesi] --> E
+        R[Docker Hub Registry<br/>Image Depolama] --> H
+        S[Trivy Scanner<br/>Güvenlik Taraması] --> J
+        T[ArgoCD API<br/>CD Tetikleme] --> M
     end
     
     style A fill:#fff3e0
@@ -64,11 +64,11 @@ graph TB
         F --> G[🔒 Trivy Scan<br/>Security Check]
     end
     
-    subgraph "Docker Integration"
-        H[Jenkins Pipeline] --> A
-        I[Docker Hub Registry] --> E
-        J[Trivy Scanner] --> G
-        K[Kubernetes Pull] --> F
+    subgraph "Dış Sistem Bağlantıları"
+        H[Jenkins Pipeline<br/>CI/CD Orkestratörü] --> A
+        I[Docker Hub Registry<br/>Container Depolama] --> E
+        J[Trivy Scanner<br/>Güvenlik Taraması] --> G
+        K[Kubernetes Cluster<br/>Image Çekme] --> F
     end
     
     style A fill:#fff3e0
@@ -115,11 +115,11 @@ graph TB
         H --> K
     end
     
-    subgraph "Kubernetes Integration"
-        L[ArgoCD GitOps] --> A
-        M[Docker Hub] --> C
-        N[Prometheus] --> H
-        O[GitHub GitOps Repo] --> L
+    subgraph "Dış Sistem Bağlantıları"
+        L[ArgoCD GitOps<br/>Dağıtım Yönetimi] --> A
+        M[Docker Hub<br/>Image Kaynağı] --> C
+        N[Prometheus<br/>Metrik Toplama] --> H
+        O[GitHub GitOps Repo<br/>Manifest Kaynağı] --> L
     end
     
     style A fill:#e0f2f1
@@ -165,10 +165,10 @@ graph TB
         H --> I
     end
     
-    subgraph "SonarQube Integration"
-        J[Jenkins Pipeline] --> A
-        K[GitHub Repository] --> C
-        L[Quality Dashboard] --> I
+    subgraph "Dış Sistem Bağlantıları"
+        J[Jenkins Pipeline<br/>CI/CD Tetikleme] --> A
+        K[GitHub Repository<br/>Kod Kaynağı] --> C
+        L[Quality Dashboard<br/>Rapor Görüntüleme] --> I
     end
     
     style F fill:#e8f5e8
@@ -204,11 +204,11 @@ graph TB
         G --> H[🔄 Continue Pipeline]
     end
     
-    subgraph "Trivy Integration"
-        I[Jenkins Pipeline] --> A
-        J[Docker Hub Registry] --> B
-        K[CVE Database] --> C
-        L[Jenkins Console] --> G
+    subgraph "Dış Sistem Bağlantıları"
+        I[Jenkins Pipeline<br/>Tarama Tetikleme] --> A
+        J[Docker Hub Registry<br/>Image Kaynağı] --> B
+        K[CVE Database<br/>Güvenlik Veritabanı] --> C
+        L[Jenkins Console<br/>Rapor Görüntüleme] --> G
     end
     
     style A fill:#fff3e0
@@ -252,11 +252,11 @@ graph TB
         H --> I
     end
     
-    subgraph "ArgoCD Integration"
-        M[Jenkins API Token] --> A
-        N[GitHub GitOps Repo] --> C
-        O[Kubernetes EKS Cluster] --> E4
-        P[ArgoCD Dashboard] --> G
+    subgraph "Dış Sistem Bağlantıları"
+        M[Jenkins API Token<br/>CD Pipeline Tetikleme] --> A
+        N[GitHub GitOps Repo<br/>aws-pipeline-gitops] --> C
+        O[Kubernetes EKS Cluster<br/>Dağıtım Hedefi] --> E4
+        P[ArgoCD Dashboard<br/>Durum Görüntüleme] --> G
     end
     
     style A fill:#fff3e0
@@ -288,10 +288,10 @@ graph TB
         C3 --> D
     end
     
-    subgraph "GitHub Integration"
-        E[Jenkins Pipeline] --> D
-        F[GitHub Repository<br/>aws-pipeline] --> C
-        G[GitOps Repository<br/>aws-pipeline-gitops] --> H[ArgoCD Monitor]
+    subgraph "Dış Sistem Bağlantıları"
+        E[Jenkins Pipeline<br/>Webhook Alıcı] --> D
+        F[GitHub Repository<br/>aws-pipeline<br/>Ana Kod Depo] --> C
+        G[GitOps Repository<br/>aws-pipeline-gitops<br/>Manifest Depo] --> H[ArgoCD Monitor<br/>İzleme]
     end
     
     style A fill:#e1f5fe
